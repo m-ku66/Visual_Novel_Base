@@ -5,6 +5,8 @@ import type {
   Scene,
   Choice,
   RouteEnding,
+  PointRequirements,
+  PointCheck,
 } from "../types/vn";
 
 interface VNStore extends GameState {
@@ -30,9 +32,17 @@ interface VNStore extends GameState {
   selectRoute: (routeId: string) => void;
   selectEnding: (endingId: string) => void;
 
-  // Internal helpers (added to fix TypeScript errors)
+  // Point system utilities
+  checkPointRequirements: (requirements: PointRequirements) => PointCheck;
+  getFilteredChoices: () => Choice[];
+  addUniversalPoints: (points: Record<string, number>) => void;
+  addRoutePoints: (points: Record<string, number>) => void;
+  addProloguePoints: (points: Record<string, number>) => void;
+
+  // Internal helpers
   advanceToNextScene: () => void;
   determineEnding: () => void;
+  findBestEnding: (endings: RouteEnding[]) => RouteEnding | null;
 
   // Utility actions
   reset: () => void;
@@ -45,6 +55,11 @@ interface VNStore extends GameState {
     sceneIndex: number;
     slideIndex: number;
     totalScenes: number;
+    points: {
+      universal: Record<string, number>;
+      route: Record<string, number>;
+      prologue: Record<string, number>;
+    };
   };
 }
 
@@ -54,8 +69,11 @@ export const useVNStore = create<VNStore>((set, get) => ({
   currentPhase: "prologue",
   currentSceneIndex: 0,
   currentSlideIndex: 0,
+  universalPoints: {},
   routePoints: {},
+  prologuePoints: {},
   choicesMade: 0,
+  endingUnlocked: [],
 
   // Load story content
   loadStory: (story: GameStory) => {
@@ -66,12 +84,74 @@ export const useVNStore = create<VNStore>((set, get) => ({
       currentSlideIndex: 0,
       currentRouteId: undefined,
       currentEndingId: undefined,
+      universalPoints: {},
       routePoints: {},
+      prologuePoints: {},
       choicesMade: 0,
+      endingUnlocked: [],
+      startTime: Date.now(),
     });
   },
 
-  // Get current scene based on phase
+  // Point requirement checking
+  checkPointRequirements: (requirements: PointRequirements): PointCheck => {
+    const { universalPoints, routePoints, prologuePoints, currentRouteId } =
+      get();
+
+    const missingPoints = {
+      universal: {} as Record<string, number>,
+      route: {} as Record<string, number>,
+      prologue: {} as Record<string, number>,
+    };
+
+    let hasRequirements = true;
+    let totalPointsNeeded = 0;
+
+    // Check universal requirements
+    if (requirements.universal) {
+      Object.entries(requirements.universal).forEach(([pointType, needed]) => {
+        const current = universalPoints[pointType] || 0;
+        if (current < needed) {
+          missingPoints.universal[pointType] = needed - current;
+          hasRequirements = false;
+          totalPointsNeeded += needed - current;
+        }
+      });
+    }
+
+    // Check route requirements
+    if (requirements.route && currentRouteId) {
+      const currentRoutePoints = routePoints[currentRouteId] || {};
+      Object.entries(requirements.route).forEach(([pointType, needed]) => {
+        const current = currentRoutePoints[pointType] || 0;
+        if (current < needed) {
+          missingPoints.route[pointType] = needed - current;
+          hasRequirements = false;
+          totalPointsNeeded += needed - current;
+        }
+      });
+    }
+
+    // Check prologue requirements
+    if (requirements.prologue) {
+      Object.entries(requirements.prologue).forEach(([pointType, needed]) => {
+        const current = prologuePoints[pointType] || 0;
+        if (current < needed) {
+          missingPoints.prologue[pointType] = needed - current;
+          hasRequirements = false;
+          totalPointsNeeded += needed - current;
+        }
+      });
+    }
+
+    return {
+      hasRequirements,
+      missingPoints,
+      totalPointsNeeded,
+    };
+  },
+
+  // Get current scene based on phase with requirement checking
   getCurrentScene: (): Scene | null => {
     const {
       story,
@@ -79,17 +159,23 @@ export const useVNStore = create<VNStore>((set, get) => ({
       currentSceneIndex,
       currentRouteId,
       currentEndingId,
+      checkPointRequirements,
     } = get();
+
     if (!story) return null;
+
+    let scene: Scene | null = null;
 
     switch (currentPhase) {
       case "prologue":
-        return story.prologue[currentSceneIndex] || null;
+        scene = story.prologue[currentSceneIndex] || null;
+        break;
 
       case "route":
         if (!currentRouteId) return null;
         const route = story.routes[currentRouteId];
-        return route?.scenes[currentSceneIndex] || null;
+        scene = route?.scenes[currentSceneIndex] || null;
+        break;
 
       case "ending":
         if (!currentRouteId || !currentEndingId) return null;
@@ -97,21 +183,99 @@ export const useVNStore = create<VNStore>((set, get) => ({
         const ending = endingRoute?.endings.find(
           (e) => e.id === currentEndingId
         );
-        return ending?.scenes[currentSceneIndex] || null;
+        scene = ending?.scenes[currentSceneIndex] || null;
+        break;
 
       default:
         return null;
     }
+
+    // Check if scene meets requirements
+    if (scene?.requires) {
+      const check = checkPointRequirements(scene.requires);
+      if (!check.hasRequirements) {
+        return null; // Scene not accessible
+      }
+    }
+
+    return scene;
   },
 
-  // Get current slide within the scene
+  // Get current slide with requirement checking
   getCurrentSlide: () => {
     const scene = get().getCurrentScene();
-    const { currentSlideIndex } = get();
+    const { currentSlideIndex, checkPointRequirements } = get();
 
     if (!scene || !scene.slides[currentSlideIndex]) return null;
 
-    return scene.slides[currentSlideIndex];
+    const slide = scene.slides[currentSlideIndex];
+
+    // Check if slide meets requirements
+    if (slide.requires) {
+      const check = checkPointRequirements(slide.requires);
+      if (!check.hasRequirements) {
+        // Skip to next slide or scene
+        get().advanceSlide();
+        return get().getCurrentSlide();
+      }
+    }
+
+    return slide;
+  },
+
+  // Get filtered choices based on requirements
+  getFilteredChoices: (): Choice[] => {
+    const slide = get().getCurrentSlide();
+    const { checkPointRequirements } = get();
+
+    if (!slide?.choices) return [];
+
+    return slide.choices.filter((choice) => {
+      if (!choice.requires) return true;
+      return checkPointRequirements(choice.requires).hasRequirements;
+    });
+  },
+
+  // Point management methods
+  addUniversalPoints: (points: Record<string, number>) => {
+    const { universalPoints } = get();
+    const newPoints = { ...universalPoints };
+
+    Object.entries(points).forEach(([pointType, value]) => {
+      newPoints[pointType] = (newPoints[pointType] || 0) + value;
+    });
+
+    set({ universalPoints: newPoints });
+  },
+
+  addRoutePoints: (points: Record<string, number>) => {
+    const { routePoints, currentRouteId } = get();
+    if (!currentRouteId) return;
+
+    const currentPoints = routePoints[currentRouteId] || {};
+    const newPoints = { ...currentPoints };
+
+    Object.entries(points).forEach(([pointType, value]) => {
+      newPoints[pointType] = (newPoints[pointType] || 0) + value;
+    });
+
+    set({
+      routePoints: {
+        ...routePoints,
+        [currentRouteId]: newPoints,
+      },
+    });
+  },
+
+  addProloguePoints: (points: Record<string, number>) => {
+    const { prologuePoints } = get();
+    const newPoints = { ...prologuePoints };
+
+    Object.entries(points).forEach(([pointType, value]) => {
+      newPoints[pointType] = (newPoints[pointType] || 0) + value;
+    });
+
+    set({ prologuePoints: newPoints });
   },
 
   // Advance to next slide in current scene
@@ -147,16 +311,13 @@ export const useVNStore = create<VNStore>((set, get) => ({
 
     switch (currentPhase) {
       case "prologue":
-        // Check if there are more prologue scenes
         if (nextSceneIndex < story.prologue.length) {
           set({
             currentSceneIndex: nextSceneIndex,
             currentSlideIndex: 0,
           });
         } else {
-          // Prologue complete - need to select route
           console.log("Prologue complete - route selection needed");
-          // Note: Route selection happens via makeChoice() or selectRoute()
         }
         break;
 
@@ -170,7 +331,6 @@ export const useVNStore = create<VNStore>((set, get) => ({
             currentSlideIndex: 0,
           });
         } else {
-          // Route complete - determine ending
           get().determineEnding();
         }
         break;
@@ -188,23 +348,48 @@ export const useVNStore = create<VNStore>((set, get) => ({
             currentSlideIndex: 0,
           });
         } else {
-          // Story complete
-          set({ currentPhase: "complete" });
+          // Mark ending as unlocked and complete story
+          const { endingUnlocked } = get();
+          if (currentEndingId && !endingUnlocked!.includes(currentEndingId)) {
+            set({
+              endingUnlocked: [...endingUnlocked!, currentEndingId],
+              currentPhase: "complete",
+            });
+          } else {
+            set({ currentPhase: "complete" });
+          }
           console.log("Story complete!");
         }
         break;
     }
   },
 
-  // Handle player choice
+  // Enhanced choice handling with hybrid points
   makeChoice: (choiceIndex: number) => {
     const slide = get().getCurrentSlide();
-    if (!slide?.choices || !slide.choices[choiceIndex]) return;
+    const filteredChoices = get().getFilteredChoices();
 
-    const choice = slide.choices[choiceIndex];
+    if (!filteredChoices[choiceIndex]) return;
+
+    const choice = filteredChoices[choiceIndex];
 
     // Increment choice counter
     set({ choicesMade: get().choicesMade + 1 });
+
+    // Add points based on current phase
+    const { currentPhase } = get();
+
+    if (choice.universalPoints) {
+      get().addUniversalPoints(choice.universalPoints);
+    }
+
+    if (choice.routePoints && currentPhase === "route") {
+      get().addRoutePoints(choice.routePoints);
+    }
+
+    if (choice.prologuePoints && currentPhase === "prologue") {
+      get().addProloguePoints(choice.prologuePoints);
+    }
 
     // If choice specifies a route, switch to it
     if (choice.routeId) {
@@ -212,36 +397,30 @@ export const useVNStore = create<VNStore>((set, get) => ({
       return;
     }
 
-    // If choice has points, accumulate them (future feature)
-    if (choice.points) {
-      const { routePoints, currentRouteId } = get();
-      if (currentRouteId) {
-        const currentPoints = routePoints[currentRouteId] || {};
-        const newPoints = { ...currentPoints };
-
-        Object.entries(choice.points).forEach(([pointType, value]) => {
-          newPoints[pointType] = (newPoints[pointType] || 0) + value;
-        });
-
-        set({
-          routePoints: {
-            ...routePoints,
-            [currentRouteId]: newPoints,
-          },
-        });
-      }
-    }
-
     // Continue to next slide/scene
     get().advanceSlide();
   },
 
-  // Select a specific route
+  // Select a specific route with requirement checking
   selectRoute: (routeId: string) => {
-    const { story } = get();
+    const { story, checkPointRequirements } = get();
     if (!story || !story.routes[routeId]) {
       console.error(`Route ${routeId} not found`);
       return;
+    }
+
+    const route = story.routes[routeId];
+
+    // Check if route requirements are met
+    if (route.requires) {
+      const check = checkPointRequirements(route.requires);
+      if (!check.hasRequirements) {
+        console.error(
+          `Route ${routeId} requirements not met`,
+          check.missingPoints
+        );
+        return;
+      }
     }
 
     set({
@@ -254,22 +433,40 @@ export const useVNStore = create<VNStore>((set, get) => ({
     console.log(`Entered route: ${routeId}`);
   },
 
-  // Determine which ending to use based on points (simple version for now)
+  // Enhanced ending determination with hybrid points
+  findBestEnding: (endings: RouteEnding[]): RouteEnding | null => {
+    const { checkPointRequirements } = get();
+
+    // Filter endings by requirements
+    const availableEndings = endings.filter((ending) => {
+      if (!ending.requires) return true;
+      return checkPointRequirements(ending.requires).hasRequirements;
+    });
+
+    if (availableEndings.length === 0) {
+      return endings[0] || null; // Fallback to first ending
+    }
+
+    // Sort by priority (higher first), then by order in array
+    availableEndings.sort((a, b) => {
+      const priorityA = a.priority || 0;
+      const priorityB = b.priority || 0;
+      return priorityB - priorityA;
+    });
+
+    return availableEndings[0];
+  },
+
   determineEnding: () => {
-    const { story, currentRouteId, routePoints } = get();
+    const { story, currentRouteId } = get();
     if (!story || !currentRouteId) return;
 
     const route = story.routes[currentRouteId];
-    const currentPoints = routePoints[currentRouteId] || {};
-
-    // Simple logic: use first ending for now
-    // Future: implement point-based ending selection
-    const selectedEnding = route.endings[0];
+    const selectedEnding = get().findBestEnding(route.endings);
 
     if (selectedEnding) {
       get().selectEnding(selectedEnding.id);
     } else {
-      // No endings defined, mark as complete
       set({ currentPhase: "complete" });
     }
   },
@@ -294,7 +491,7 @@ export const useVNStore = create<VNStore>((set, get) => ({
       currentSlideIndex: 0,
     });
 
-    console.log(`Entered ending: ${endingId}`);
+    console.log(`Entered ending: ${endingId} - ${ending.name}`);
   },
 
   // Reset to beginning
@@ -305,12 +502,16 @@ export const useVNStore = create<VNStore>((set, get) => ({
       currentSlideIndex: 0,
       currentRouteId: undefined,
       currentEndingId: undefined,
+      universalPoints: {},
       routePoints: {},
+      prologuePoints: {},
       choicesMade: 0,
+      endingUnlocked: [],
+      startTime: Date.now(),
     });
   },
 
-  // Debug information
+  // Enhanced debug information
   getDebugInfo: () => {
     const {
       currentPhase,
@@ -319,6 +520,9 @@ export const useVNStore = create<VNStore>((set, get) => ({
       currentSceneIndex,
       currentSlideIndex,
       story,
+      universalPoints,
+      routePoints,
+      prologuePoints,
     } = get();
 
     let totalScenes = 0;
@@ -349,6 +553,11 @@ export const useVNStore = create<VNStore>((set, get) => ({
       sceneIndex: currentSceneIndex,
       slideIndex: currentSlideIndex,
       totalScenes,
+      points: {
+        universal: universalPoints,
+        route: currentRouteId ? routePoints[currentRouteId] || {} : {},
+        prologue: prologuePoints,
+      },
     };
   },
 }));

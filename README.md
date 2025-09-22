@@ -1,17 +1,53 @@
-# Simple Visual Novel System
+# Advanced Visual Novel System
 
-A lightweight, exportable visual novel system for React + Zustand projects.
+A lightweight, exportable visual novel system for React + Zustand with a sophisticated hybrid point system for complex branching narratives.
 
-## Structure
+## ✨ Features Overview
+
+- **Hybrid Point System**: Universal, route-specific, and prologue points
+- **Conditional Content**: Choices and scenes that appear based on player progression
+- **Smart Ending Selection**: Priority-based ending determination with multiple requirements
+- **Secret Content**: Hidden routes and endings unlocked through specific choices
+- **Achievement System**: Track player accomplishments and unlocked endings
+- **Real-time Point Visualization**: See point gains and current totals
+- **Modular Architecture**: Easy to extend and customize
+
+## 📖 Story Structure
 
 ```
-Prologue (shared)
-├── Route A → Ending A1
-├── Route B → Ending B1 / B2
-└── Route C → Ending C1
+Prologue (shared) ──┐
+                   ├── Route A ──┬── Ending A1 (friendship)
+                   │             ├── Ending A2 (romance)
+                   │             └── Ending A3 (secret/sage)
+                   ├── Route B ──┬── Ending B1 (scholar)
+                   │             ├── Ending B2 (mage)
+                   │             └── Ending B3 (secret/archmage)
+                   └── Unity Route ──── Ending U1 (secret/leader)
+                                    (requires prologue leadership)
 ```
 
-## Quick Start
+## 🎯 Point System Architecture
+
+### Three Point Types Working Together:
+
+1. **Universal Points** - Carry across all routes
+
+   - `courage`, `kindness`, `wisdom`, `magic`
+   - Affect route access and ending requirements
+   - Display in blue in the UI
+
+2. **Prologue Points** - Early choices that matter
+
+   - `dragon_encounter`, `leadership`
+   - Determine which routes become available
+   - Display in purple in the UI
+
+3. **Route Points** - Relationship and skill progression
+   - `alice_bond`, `bob_trust`, `survival_skills`
+   - Specific to each route's narrative
+   - Display in green in the UI
+
+## 🚀 Quick Start
 
 ### 1. Install Dependencies
 
@@ -23,10 +59,10 @@ npm install zustand react
 
 Copy these files into your React project:
 
-- `types/vn.ts` - Core types
-- `stores/vnStore.ts` - Main game store
-- `components/VisualNovel.tsx` - UI component
-- `content/exampleStory.ts` - Example story
+- `types/vn.ts` - Enhanced types with point system
+- `stores/vnStore.ts` - Main game store with point logic
+- `components/VisualNovel.tsx` - Enhanced UI component
+- `content/exampleStory.ts` - Complete example story
 
 ### 3. Use in Your App
 
@@ -39,24 +75,49 @@ function App() {
 }
 ```
 
-## Creating Your Story
+## 🏗️ Creating Your Story
 
-### Basic Structure
+### Enhanced Story Structure
 
 ```typescript
 import { GameStory } from "./types/vn";
 
 export const myStory: GameStory = {
+  title: "My Epic Adventure",
+  description: "A tale of courage and friendship",
+
+  // Define your point types (optional but recommended)
+  pointTypes: {
+    universal: {
+      courage: "Courage",
+      wisdom: "Wisdom",
+    },
+    prologue: {
+      first_choice: "First Impression",
+    },
+    route: {
+      character_bond: "Character Bond",
+    },
+  },
+
   prologue: [
     {
       id: "intro",
       title: "Beginning",
       slides: [
         {
+          id: "opening",
           text: "Your story starts here...",
           choices: [
-            { text: "Choice A", routeId: "route_a" },
-            { text: "Choice B", routeId: "route_b" },
+            {
+              text: "Be brave",
+              universalPoints: { courage: 2 },
+              prologuePoints: { first_choice: 1 },
+            },
+            {
+              text: "Be cautious",
+              universalPoints: { wisdom: 2 },
+            },
           ],
         },
       ],
@@ -64,131 +125,244 @@ export const myStory: GameStory = {
   ],
 
   routes: {
-    route_a: {
-      id: "route_a",
-      name: "Route A",
+    hero_route: {
+      id: "hero_route",
+      name: "Hero's Path",
+      // Route only accessible with courage
+      requires: { universal: { courage: 2 } },
       scenes: [
         /* your scenes */
       ],
       endings: [
-        /* your endings */
+        {
+          id: "true_hero",
+          name: "True Hero",
+          priority: 3, // Higher priority = preferred ending
+          requires: {
+            universal: { courage: 5 },
+            route: { character_bond: 3 },
+          },
+          scenes: [
+            /* ending scenes */
+          ],
+        },
       ],
     },
   },
 };
 ```
 
-### Adding Scenes
+### Adding Conditional Content
 
 ```typescript
+// Choices that only appear with certain points
 {
-  id: 'scene1',
-  title: 'Scene Title',
-  characters: ['Alice', 'Bob'], // optional
-  slides: [
+  id: "magic_choice",
+  text: "Use your magical knowledge",
+  choices: [
     {
-      speaker: 'Alice', // optional
-      text: "Hello, world!"
-    },
-    {
-      text: "Narration text here...",
-      choices: [
-        { text: "Continue to next scene" },
-        { text: "Go to Route B", routeId: "route_b" }
-      ]
+      text: "Cast a healing spell",
+      requires: { universal: { magic: 3 } }, // Only shows if player has 3+ magic
+      universalPoints: { magic: 1, kindness: 2 },
+      routePoints: { character_bond: 3 }
     }
   ]
 }
+
+// Scenes that require specific progression
+{
+  id: "secret_scene",
+  title: "Hidden Knowledge",
+  requires: {
+    universal: { wisdom: 4 },
+    prologue: { scholar_path: 1 }
+  },
+  slides: [/* secret content */]
+}
 ```
 
-## Features
+### Creating Secret Endings
+
+```typescript
+{
+  id: "secret_master",
+  name: "Secret Master Ending",
+  isSecretEnding: true,
+  achievementName: "Master of All Arts",
+  priority: 10, // Highest priority
+  requires: {
+    universal: { courage: 5, wisdom: 5, magic: 5 },
+    route: { perfect_bond: 5 }
+  },
+  scenes: [/* epic secret ending */]
+}
+```
+
+## 💡 Advanced Features
 
 ### ✅ Currently Implemented
 
-- Prologue → Route branching
-- Multiple routes with different scenes
-- Route-specific endings
-- Simple UI with continue/choice buttons
-- Game completion detection
-- Debug information
+- **Hybrid Point System**: Universal, route, and prologue points
+- **Conditional Choices**: Options that appear based on player progression
+- **Smart Ending Selection**: Priority-based with multiple requirements
+- **Secret Content**: Hidden routes and endings
+- **Real-time UI**: Point tracking with hover previews
+- **Achievement System**: Track unlocked endings
+- **Enhanced Debug Tools**: Comprehensive progression tracking
+- **Point Visualization**: Color-coded point types in UI
+- **Requirement Filtering**: Automatic choice/scene filtering
 
-### 🚧 Future Features (Easy to Add)
+### 🚧 Future Enhancements (Easy to Add)
 
-- Point accumulation within routes
-- Point-based ending selection
-- Character sprites/images
-- Sound effects
-- Save/load system
-- More UI customization
+- **Character Sprites**: Visual character representations
+- **Background Images**: Scene-specific backgrounds
+- **Sound Effects**: Audio feedback for choices
+- **Save/Load System**: Player progress persistence
+- **Multiple Save Slots**: Different playthroughs
+- **Gallery Mode**: View unlocked scenes/endings
+- **Point History**: Track how points were earned
 
-## File Structure
+## 📂 File Structure
 
 ```
 src/
 ├── types/
-│   └── vn.ts           # Core VN types
+│   └── vn.ts           # Enhanced types with point system
 ├── stores/
-│   └── vnStore.ts      # Zustand store
+│   └── vnStore.ts      # Zustand store with point logic
 ├── components/
-│   └── VisualNovel.tsx # Main UI component
+│   └── VisualNovel.tsx # Enhanced UI with point display
 ├── content/
-│   └── exampleStory.ts # Story content
+│   └── exampleStory.ts # Full-featured example story
 └── App.tsx             # Usage example
 ```
 
-## Customization
+## 🎨 Customization
 
-### Styling
-
-The `VisualNovel` component includes basic CSS-in-JS styles. You can:
-
-- Override styles via the `className` prop
-- Modify the built-in styles in the component
-- Replace with your preferred styling solution
-
-### Story Content
-
-- Create new story files in `content/`
-- Implement the `GameStory` interface
-- Pass to `<VisualNovel story={yourStory} />`
-
-### Adding Features
-
-The system is designed to be easily extensible:
-
-- Add new slide types in `types/vn.ts`
-- Extend the store in `vnStore.ts`
-- Modify the UI in `VisualNovel.tsx`
-
-## Integration Examples
-
-### Next.js
+### Point System Configuration
 
 ```typescript
-// pages/vn.tsx
+// Customize point types for your story
+pointTypes: {
+  universal: {
+    strength: "Physical Strength",
+    intelligence: "Intelligence",
+    charisma: "Charisma"
+  },
+  prologue: {
+    background: "Character Background",
+    motivation: "Core Motivation"
+  },
+  route: {
+    trust_alice: "Trust with Alice",
+    magic_mastery: "Magical Mastery"
+  }
+}
+```
+
+### UI Styling
+
+The component uses Tailwind CSS classes and can be customized:
+
+```tsx
+// Override the main container
+<VisualNovel story={myStory} className="my-custom-styles" />
+
+// The component includes:
+// - Point indicators (blue/green/purple)
+// - Hover effects showing point gains
+// - Responsive design
+// - Dark theme by default
+```
+
+### Story Content Organization
+
+```typescript
+// Organize large stories across multiple files
+import { prologueScenes } from "./prologue";
+import { aliceRoute } from "./routes/alice";
+import { bobRoute } from "./routes/bob";
+
+export const myStory: GameStory = {
+  prologue: prologueScenes,
+  routes: {
+    alice: aliceRoute,
+    bob: bobRoute,
+  },
+};
+```
+
+## 🔧 Integration Examples
+
+### Next.js with TypeScript
+
+```typescript
+// pages/visual-novel.tsx
 import { VisualNovel } from "../components/VisualNovel";
 import { myStory } from "../content/myStory";
 
 export default function VNPage() {
-  return <VisualNovel story={myStory} />;
+  return (
+    <div className="min-h-screen bg-gray-900">
+      <VisualNovel story={myStory} />
+    </div>
+  );
 }
 ```
 
-### Electron
+### Vite + React
 
-Works out of the box - just include in your React app.
+```typescript
+// src/pages/Game.tsx
+import { VisualNovel } from "../components/VisualNovel";
+import { adventureStory } from "../content/adventure";
 
-### Existing React App
+export function GamePage() {
+  return <VisualNovel story={adventureStory} />;
+}
+```
 
-Copy the files and import where needed. No global setup required!
+### Electron Desktop App
 
-## Tips
+Works seamlessly - just include in your React renderer process.
 
-1. **Start Simple**: Begin with prologue + 1-2 basic routes
-2. **Test Early**: Use the debug info to verify story flow
-3. **Incremental**: Add point systems and complex branching later
-4. **Modular**: Keep story content in separate files
+## 📊 Example Point Flow
 
-## License
+```
+Player starts with 0 points
+├── Prologue Choice 1: "Save the child"
+│   └── Gains: +3 courage, +2 kindness, +2 dragon_encounter
+├── Prologue Choice 2: "Sense magic"
+│   └── Gains: +2 magic, +1 wisdom (requires 1 wisdom)
+└── Route Selection: Alice Route unlocked
+    ├── Route Choice 1: "Share herb knowledge"
+    │   └── Gains: +1 wisdom, +2 alice_bond (requires 2 wisdom)
+    └── Ending: "Forest Sage" unlocked
+        └── Requires: 4 magic, 4 wisdom, 3 alice_bond ✓
+```
 
-MIT - Use freely in any project!
+## 🏆 Best Practices
+
+1. **Start Simple**: Begin with 2-3 universal points and basic routes
+2. **Test Requirements**: Use debug mode to verify point requirements
+3. **Balance Progression**: Ensure multiple paths to important content
+4. **Clear Feedback**: Use descriptive point names and choice descriptions
+5. **Secret Content**: Hide special endings behind meaningful achievements
+6. **Modular Design**: Keep routes and scenes in separate functions/files
+
+## 🎮 Player Experience Features
+
+- **Point Transparency**: Hover over choices to see point gains
+- **Progress Tracking**: Real-time point totals in the header
+- **Achievement System**: Visual feedback for unlocked endings
+- **Smart Filtering**: Impossible choices are hidden, not grayed out
+- **Rich Completion**: Final stats screen with all earned points
+- **Replay Value**: Different choices lead to genuinely different experiences
+
+## 📄 License
+
+MIT - Use freely in any project! Perfect for game jams, portfolio projects, or commercial visual novels.
+
+---
+
+**Ready to create your epic visual novel?** Start with the example story and customize from there!
