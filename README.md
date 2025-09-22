@@ -1,70 +1,194 @@
-# React + TypeScript + Vite
+# Simple Visual Novel System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight, exportable visual novel system for React + Zustand projects.
 
-Currently, two official plugins are available:
+## Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Prologue (shared)
+├── Route A → Ending A1
+├── Route B → Ending B1 / B2
+└── Route C → Ending C1
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Quick Start
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 1. Install Dependencies
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
+```bash
+npm install zustand react
+```
+
+### 2. Copy Files
+
+Copy these files into your React project:
+
+- `types/vn.ts` - Core types
+- `stores/vnStore.ts` - Main game store
+- `components/VisualNovel.tsx` - UI component
+- `content/exampleStory.ts` - Example story
+
+### 3. Use in Your App
+
+```tsx
+import { VisualNovel } from "./components/VisualNovel";
+import { exampleStory } from "./content/exampleStory";
+
+function App() {
+  return <VisualNovel story={exampleStory} />;
+}
+```
+
+## Creating Your Story
+
+### Basic Structure
+
+```typescript
+import { GameStory } from "./types/vn";
+
+export const myStory: GameStory = {
+  prologue: [
+    {
+      id: "intro",
+      title: "Beginning",
+      slides: [
+        {
+          text: "Your story starts here...",
+          choices: [
+            { text: "Choice A", routeId: "route_a" },
+            { text: "Choice B", routeId: "route_b" },
+          ],
+        },
+      ],
+    },
+  ],
+
+  routes: {
+    route_a: {
+      id: "route_a",
+      name: "Route A",
+      scenes: [
+        /* your scenes */
+      ],
+      endings: [
+        /* your endings */
+      ],
     },
   },
-])
+};
 ```
-# Visual_Novel_Base
+
+### Adding Scenes
+
+```typescript
+{
+  id: 'scene1',
+  title: 'Scene Title',
+  characters: ['Alice', 'Bob'], // optional
+  slides: [
+    {
+      speaker: 'Alice', // optional
+      text: "Hello, world!"
+    },
+    {
+      text: "Narration text here...",
+      choices: [
+        { text: "Continue to next scene" },
+        { text: "Go to Route B", routeId: "route_b" }
+      ]
+    }
+  ]
+}
+```
+
+## Features
+
+### ✅ Currently Implemented
+
+- Prologue → Route branching
+- Multiple routes with different scenes
+- Route-specific endings
+- Simple UI with continue/choice buttons
+- Game completion detection
+- Debug information
+
+### 🚧 Future Features (Easy to Add)
+
+- Point accumulation within routes
+- Point-based ending selection
+- Character sprites/images
+- Sound effects
+- Save/load system
+- More UI customization
+
+## File Structure
+
+```
+src/
+├── types/
+│   └── vn.ts           # Core VN types
+├── stores/
+│   └── vnStore.ts      # Zustand store
+├── components/
+│   └── VisualNovel.tsx # Main UI component
+├── content/
+│   └── exampleStory.ts # Story content
+└── App.tsx             # Usage example
+```
+
+## Customization
+
+### Styling
+
+The `VisualNovel` component includes basic CSS-in-JS styles. You can:
+
+- Override styles via the `className` prop
+- Modify the built-in styles in the component
+- Replace with your preferred styling solution
+
+### Story Content
+
+- Create new story files in `content/`
+- Implement the `GameStory` interface
+- Pass to `<VisualNovel story={yourStory} />`
+
+### Adding Features
+
+The system is designed to be easily extensible:
+
+- Add new slide types in `types/vn.ts`
+- Extend the store in `vnStore.ts`
+- Modify the UI in `VisualNovel.tsx`
+
+## Integration Examples
+
+### Next.js
+
+```typescript
+// pages/vn.tsx
+import { VisualNovel } from "../components/VisualNovel";
+import { myStory } from "../content/myStory";
+
+export default function VNPage() {
+  return <VisualNovel story={myStory} />;
+}
+```
+
+### Electron
+
+Works out of the box - just include in your React app.
+
+### Existing React App
+
+Copy the files and import where needed. No global setup required!
+
+## Tips
+
+1. **Start Simple**: Begin with prologue + 1-2 basic routes
+2. **Test Early**: Use the debug info to verify story flow
+3. **Incremental**: Add point systems and complex branching later
+4. **Modular**: Keep story content in separate files
+
+## License
+
+MIT - Use freely in any project!
