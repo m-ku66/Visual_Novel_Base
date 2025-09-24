@@ -1,4 +1,4 @@
-# Advanced Visual Novel System
+# Visual Novel System Base
 
 A lightweight, exportable visual novel system for React + Zustand with a sophisticated hybrid point system for complex branching narratives.
 
@@ -16,14 +16,14 @@ A lightweight, exportable visual novel system for React + Zustand with a sophist
 
 ```
 Prologue (shared) ──┐
-                   ├── Route A ──┬── Ending A1 (friendship)
-                   │             ├── Ending A2 (romance)
-                   │             └── Ending A3 (secret/sage)
-                   ├── Route B ──┬── Ending B1 (scholar)
-                   │             ├── Ending B2 (mage)
-                   │             └── Ending B3 (secret/archmage)
-                   └── Unity Route ──── Ending U1 (secret/leader)
-                                    (requires prologue leadership)
+                    ├── Route A ──┬── Ending A1 (friendship)
+                    │             ├── Ending A2 (romance)
+                    │             └── Ending A3 (secret/sage)
+                    ├── Route B ──┬── Ending B1 (scholar)
+                    │             ├── Ending B2 (mage)
+                    │             └── Ending B3 (secret/archmage)
+                    └── Unity Route ──── Ending U1 (secret/leader)
+                                     (requires prologue leadership)
 ```
 
 ## 🎯 Point System Architecture
@@ -52,16 +52,16 @@ Prologue (shared) ──┐
 ### 1. Install Dependencies
 
 ```bash
-npm install zustand react
+npm install zustand react react-dom
 ```
 
 ### 2. Copy Files
 
 Copy these files into your React project:
 
-- `types/vn.ts` - Enhanced types with point system
+- `types/vn.ts` - Types with point system
 - `stores/vnStore.ts` - Main game store with point logic
-- `components/VisualNovel.tsx` - Enhanced UI component
+- `components/VisualNovel.tsx` - UI component
 - `content/exampleStory.ts` - Complete example story
 
 ### 3. Use in Your App
@@ -77,7 +77,7 @@ function App() {
 
 ## 🏗️ Creating Your Story
 
-### Enhanced Story Structure
+### Object-Based Story Structure
 
 ```typescript
 import { GameStory } from "./types/vn";
@@ -214,9 +214,9 @@ export const myStory: GameStory = {
 
 ### 🚧 Future Enhancements (Easy to Add)
 
-- **Character Sprites**: Visual character representations
-- **Background Images**: Scene-specific backgrounds
-- **Sound Effects**: Audio feedback for choices
+- **Character Sprite Suite**: Visual character representations
+- **Background Image Suite**: Scene-specific backgrounds
+- **Sound Effect Suite**: Audio feedback for choices
 - **Save/Load System**: Player progress persistence
 - **Multiple Save Slots**: Different playthroughs
 - **Gallery Mode**: View unlocked scenes/endings
