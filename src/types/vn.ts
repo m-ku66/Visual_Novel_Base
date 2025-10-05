@@ -28,6 +28,14 @@ export type Choice = {
   description?: string; // Tooltip or additional info
 };
 
+type CharacterSprite = {
+  id: string;
+  name: string;
+  baseImage: string;
+  expressions?: Record<string, string>; // "happy" -> "/sprites/alice-happy.png"
+  positions?: Record<string, { x: number; y: number }>;
+};
+
 // Individual dialogue slide within a scene
 export type Slide = {
   id: string;
@@ -41,6 +49,16 @@ export type Slide = {
   // Visual enhancements
   background?: string; // Future: background image
   mood?: "happy" | "sad" | "tense" | "romantic" | "mysterious"; // Future: UI theming
+
+  sprites?: {
+    characterId: CharacterSprite["id"];
+    expression?: CharacterSprite["expressions"] extends Record<string, string>
+      ? keyof CharacterSprite["expressions"]
+      : string;
+    position?: "left" | "center" | "right" | "custom";
+    customPosition?: { x: number; y: number };
+    transition?: "fadeIn" | "slideIn" | "none";
+  }[];
 };
 
 // A scene is a sequence of slides
