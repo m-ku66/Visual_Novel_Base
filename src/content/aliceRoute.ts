@@ -16,6 +16,11 @@ export const aliceRoute = {
           id: "alice_intro",
           speaker: "Alice",
           text: "I'm Alice, by the way. I'm a ranger - I know these woods like the back of my hand... at least, I used to before all this dragon chaos started.",
+          sprites: {
+            characterId: "alice",
+            expression: "neutral",
+            position: "right",
+          },
         },
         {
           id: "alice_exposition I",

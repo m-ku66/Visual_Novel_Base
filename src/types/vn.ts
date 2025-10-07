@@ -1,155 +1,176 @@
 /**
- * Visual Novel Core Types - Enhanced with Hybrid Point System
+ * Visual Novel Core Types - Hybrid Point System, Multiple Routes, Live2D Support
  * Structure: Prologue → Routes → Endings
  * Points: Universal (carry across routes) + Route-specific + Prologue
  */
 
-// Point requirements for conditional content
+// Point requirements (unchanged)
 export type PointRequirements = {
   universal?: Record<string, number>;
   route?: Record<string, number>;
   prologue?: Record<string, number>;
 };
 
-// Enhanced choice with hybrid point system
 export type Choice = {
   text: string;
-  routeId?: string; // If present, switches to this route
-
-  // Point allocation
-  universalPoints?: Record<string, number>; // Points that carry across all routes
-  routePoints?: Record<string, number>; // Points specific to current route
-  prologuePoints?: Record<string, number>; // Early game points (for route access)
-
-  // Conditional display (choice only shows if requirements met)
+  routeId?: string;
+  universalPoints?: Record<string, number>;
+  routePoints?: Record<string, number>;
+  prologuePoints?: Record<string, number>;
   requires?: PointRequirements;
-
-  // Metadata
-  description?: string; // Tooltip or additional info
+  description?: string;
 };
 
-type CharacterSprite = {
+// --- SPRITE SYSTEM ---
+
+// Simple sprite (single image per expression)
+export type SimpleSprite = {
+  type: "simple";
   id: string;
   name: string;
   baseImage: string;
   expressions?: Record<string, string>; // "happy" -> "/sprites/alice-happy.png"
-  positions?: Record<string, { x: number; y: number }>;
+  defaultExpression?: string;
+  scale?: number;
 };
 
-// Individual dialogue slide within a scene
+// Live2D layered sprite part
+export type SpritePart = {
+  id: string; // "mouth", "eyes", "hair_front"
+  image: string; // Path to the image
+  zIndex: number; // Layer order
+  variants?: Record<string, string>; // "happy" -> "/char/mouth_happy.png"
+  // Optional animation offsets
+  animation?: {
+    x?: { from: number; to: number }; // Horizontal movement
+    y?: { from: number; to: number }; // Vertical movement
+    duration?: number; // Animation duration in seconds
+    delay?: number; // Animation delay
+    repeat?: boolean; // Loop animation
+  };
+};
+
+// Live2D expression (affects multiple parts)
+export type Live2DExpression = {
+  name: string; // "happy", "surprised", "sad"
+  partStates: Record<string, string>; // partId -> variantId
+  // Example: { mouth: "happy", eyes: "closed", brows: "raised" }
+};
+
+// Live2D layered sprite
+export type Live2DSprite = {
+  type: "live2d";
+  id: string;
+  name: string;
+  parts: SpritePart[]; // All the layers that make up this character
+  expressions?: Record<string, Live2DExpression>; // Named expressions
+  defaultExpression?: string;
+  scale?: number;
+};
+
+// Union type for flexibility
+export type CharacterSprite = SimpleSprite | Live2DSprite;
+
+// Helper type guards
+// Export type guards
+export function isSimpleSprite(
+  sprite: CharacterSprite
+): sprite is SimpleSprite {
+  return sprite.type === "simple";
+}
+
+export function isLive2DSprite(
+  sprite: CharacterSprite
+): sprite is Live2DSprite {
+  return sprite.type === "live2d";
+}
+
+// --- SLIDE TYPES ---
+
 export type Slide = {
   id: string;
-  speaker?: string; // Character name, undefined for narration
+  speaker?: string;
   text: string;
-  choices?: Choice[]; // Player choices
-
-  // Conditional content
-  requires?: PointRequirements; // Slide only shows if requirements met
-
-  // Visual enhancements
-  background?: string; // Future: background image
-  mood?: "happy" | "sad" | "tense" | "romantic" | "mysterious"; // Future: UI theming
+  choices?: Choice[];
+  requires?: PointRequirements;
+  background?: string;
+  mood?: "happy" | "sad" | "tense" | "romantic" | "mysterious";
 
   sprites?: {
-    characterId: CharacterSprite["id"];
-    expression?: CharacterSprite["expressions"] extends Record<string, string>
-      ? keyof CharacterSprite["expressions"]
-      : string;
+    characterId: string; // References sprite in GameStory.characters
+    expression?: string; // Expression name
     position?: "left" | "center" | "right" | "custom";
     customPosition?: { x: number; y: number };
     transition?: "fadeIn" | "slideIn" | "none";
+    scale?: number;
+    flip?: boolean;
+    layer?: number;
+    opacity?: number;
+
+    // Live2D specific overrides
+    partOverrides?: Record<string, string>; // Override specific parts
+    // Example: { mouth: "smile", eyes: "wink" } overrides just those parts
   }[];
 };
 
-// A scene is a sequence of slides
 export type Scene = {
   id: string;
   title: string;
-  characters?: string[]; // Characters present (for UI)
+  characters?: string[];
   slides: Slide[];
-
-  // Scene requirements
-  requires?: PointRequirements; // Scene only accessible if requirements met
+  requires?: PointRequirements;
 };
 
-// Enhanced route ending with hybrid requirements
 export type RouteEnding = {
   id: string;
   name: string;
-  description?: string; // What this ending represents
+  description?: string;
   scenes: Scene[];
-
-  // Hybrid point requirements
   requires?: PointRequirements;
-
-  // Priority for ending selection (higher = preferred if multiple qualify)
   priority?: number;
-
-  // Metadata
-  isSecretEnding?: boolean; // Hidden from player until unlocked
-  achievementName?: string; // Future: achievement system
+  isSecretEnding?: boolean;
+  achievementName?: string;
 };
 
-// A complete story route
 export type Route = {
   id: string;
   name: string;
   description?: string;
-  scenes: Scene[]; // Main route scenes
-  endings: RouteEnding[]; // Possible endings for this route
-
-  // Route access requirements
-  requires?: PointRequirements; // Points needed to access this route
-
-  // Route metadata
+  scenes: Scene[];
+  endings: RouteEnding[];
+  requires?: PointRequirements;
   difficulty?: "easy" | "medium" | "hard";
-  estimatedLength?: number; // Estimated scenes
+  estimatedLength?: number;
 };
 
-// The complete game structure
 export type GameStory = {
-  // Story metadata
   title?: string;
   description?: string;
-
-  // Story content
   prologue: Scene[];
   routes: Record<string, Route>;
-
-  // Global settings
+  characters?: Record<string, CharacterSprite>; // Can be simple OR live2d
   pointTypes?: {
-    universal: Record<string, string>; // pointId -> display name
+    universal: Record<string, string>;
     route: Record<string, string>;
     prologue: Record<string, string>;
   };
 };
 
-// Enhanced game state with hybrid points
 export type GameState = {
-  // Navigation state
   currentPhase: "prologue" | "route" | "ending" | "complete";
   currentRouteId?: string;
   currentEndingId?: string;
-
-  // Progress tracking
   currentSceneIndex: number;
   currentSlideIndex: number;
-
-  // Hybrid point system
-  universalPoints: Record<string, number>; // Points that carry across all routes
-  routePoints: Record<string, Record<string, number>>; // routeId -> pointType -> value
-  prologuePoints: Record<string, number>; // Early game points for route access
-
-  // Player info
+  universalPoints: Record<string, number>;
+  routePoints: Record<string, Record<string, number>>;
+  prologuePoints: Record<string, number>;
   playerName?: string;
   choicesMade: number;
-
-  // Session tracking
   startTime?: number;
-  endingUnlocked?: string[]; // Endings the player has seen
+  endingUnlocked?: string[];
 };
 
-// Utility types for point checking
 export type PointCheck = {
   hasRequirements: boolean;
   missingPoints: {
@@ -160,8 +181,7 @@ export type PointCheck = {
   totalPointsNeeded: number;
 };
 
-// Story content interface for easy swapping
 export interface StoryContent {
   getStory(): GameStory;
-  validateStory?(story: GameStory): boolean; // Future: story validation
+  validateStory?(story: GameStory): boolean;
 }

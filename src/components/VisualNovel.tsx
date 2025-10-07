@@ -134,7 +134,7 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
     return (
         <div className={`font-serif text-white min-h-screen overflow-hidden ${className}`}>
             {/* Full-screen game world */}
-            <GameWorldLayer currentSlide={currentSlide} />
+            <GameWorldLayer currentSlide={currentSlide} story={story} />
 
             {/* UI Overlay */}
             <UIGridOverlay debug={showDebug}>

@@ -2,6 +2,7 @@ import type { GameStory } from "../types/vn";
 import { aliceRoute } from "./aliceRoute";
 import { bobRoute } from "./bobRoute";
 import { unityRoute } from "./unityRoute";
+import { characters } from "./characters";
 
 /**
  * Enhanced example story demonstrating the hybrid point system:
@@ -17,6 +18,7 @@ import { unityRoute } from "./unityRoute";
  */
 export const exampleStory: GameStory = {
   title: "The Dragon's Choice",
+  characters,
   description:
     "A tale of courage, friendship, and magic in a world threatened by dragons.",
 

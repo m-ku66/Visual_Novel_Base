@@ -7,6 +7,7 @@ import type {
   RouteEnding,
   PointRequirements,
   PointCheck,
+  Slide,
 } from "../types/vn";
 
 interface VNStore extends GameState {
@@ -18,11 +19,7 @@ interface VNStore extends GameState {
 
   // Navigation actions
   getCurrentScene: () => Scene | null;
-  getCurrentSlide: () => {
-    speaker?: string;
-    text: string;
-    choices?: Choice[];
-  } | null;
+  getCurrentSlide: () => Slide | null;
 
   // Progression actions
   advanceSlide: () => void;
@@ -202,7 +199,7 @@ export const useVNStore = create<VNStore>((set, get) => ({
   },
 
   // Get current slide with requirement checking
-  getCurrentSlide: () => {
+  getCurrentSlide: (): Slide | null => {
     const scene = get().getCurrentScene();
     const { currentSlideIndex, checkPointRequirements } = get();
 
@@ -214,12 +211,11 @@ export const useVNStore = create<VNStore>((set, get) => ({
     if (slide.requires) {
       const check = checkPointRequirements(slide.requires);
       if (!check.hasRequirements) {
-        // Skip to next slide or scene
-        get().advanceSlide();
-        return get().getCurrentSlide();
+        return null; // Slide not accessible
       }
     }
 
+    // Return the FULL slide object, not just a subset
     return slide;
   },
 
