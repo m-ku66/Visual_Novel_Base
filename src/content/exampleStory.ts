@@ -35,8 +35,12 @@ export const exampleStory: GameStory = {
     },
     route: {
       alice_bond: "Bond with Alice",
-      bob_trust: "Trust with Bob",
+      alice_trust: "Trust with Alice",
+      alice_mystery: "Mysterious with Alice",
+      alice_deception: "Deceptive with Alice",
+      alice_distance: "Distance from Alice",
       alice_romance: "Romance with Alice",
+      bob_trust: "Trust with Bob",
       survival_skills: "Survival Skills",
     },
   },

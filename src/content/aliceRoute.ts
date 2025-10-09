@@ -16,16 +16,25 @@ export const aliceRoute = {
           id: "alice_intro",
           speaker: "Alice",
           text: "I'm Alice, by the way. I'm a ranger - I know these woods like the back of my hand... at least, I used to before all this dragon chaos started.",
-          sprites: {
-            characterId: "alice",
-            expression: "neutral",
-            position: "right",
-          },
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "talking",
+              position: "center",
+            },
+          ],
         },
         {
           id: "alice_exposition I",
           speaker: "Alice",
           text: "I thought they only existed on the continent of Bershka, but I guess that may not be the case anymore...",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "sadTalking",
+              position: "center",
+            },
+          ],
         },
         {
           id: "alice_exposition II",
@@ -35,6 +44,13 @@ export const aliceRoute = {
           id: "alice_exposition III",
           speaker: "Alice",
           text: "Anyway, I got ahead of myself. What's your name?",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
         },
         {
           id: "name_response",
@@ -43,37 +59,61 @@ export const aliceRoute = {
             {
               text: "Tell her your name",
               universalPoints: { kindness: 1 },
-              routePoints: { alice_bond: 1 },
+              routePoints: { alice_bond: 1, alice_trust: 1 }, // ← Use positive "trust"
             },
             {
               text: "Make up a name to keep your identity secret",
               universalPoints: { magic: 1 },
-              routePoints: { alice_bond: -1, survival_skills: 1 },
+              routePoints: { alice_deception: 1, survival_skills: 1 }, // ← Track "deception" instead
             },
             {
               text: "Deflect the question and ask about her instead",
               universalPoints: { kindness: 1, wisdom: 1 },
-              routePoints: { alice_bond: -1, alice_romance: 1 },
+              routePoints: { alice_mystery: 1, alice_romance: 1 }, // ← Track "mystery" instead
             },
           ],
         },
+        // Response based on truthfulness
         {
           id: "alice_exposition IV - truth",
           speaker: "Alice",
           text: "...That's an odd name...but it suits you. In any case, we should keep moving.",
-          requires: { route: { alice_bond: 1 } },
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "surprised",
+              position: "center",
+            },
+          ],
+          requires: { route: { alice_trust: 1 } }, // ← Check for trust
         },
+        // Response based on mystery/romance
         {
           id: "alice_exposition IV - mystery",
           speaker: "Alice",
-          text: "Being sneaky might help you survive, but it won't help us trust each other. Still, I get it. Let's keep moving.",
-          requires: { route: { alice_bond: -1, alice_romance: 1 } },
+          text: "One with words, huh? I like that. Keeps things interesting. Let's keep going.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "sly",
+              position: "center",
+            },
+          ],
+          requires: { route: { alice_mystery: 1 } }, // ← Check for mystery
         },
+        // Response based on deception
         {
           id: "alice_exposition IV - lie",
           speaker: "Alice",
-          text: "...Okay. In any case, we should keep moving.",
-          requires: { route: { alice_bond: -1, survival_skills: 1 } },
+          text: "Being sneaky might help you survive, but it won't help us trust each other. Still, I get it. Let's keep moving.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "sadTalking",
+              position: "center",
+            },
+          ],
+          requires: { route: { alice_deception: 1 } }, // ← Check for deception
         },
         {
           id: "forest_knowledge_test",
@@ -85,7 +125,6 @@ export const aliceRoute = {
               routePoints: { alice_bond: 2, survival_skills: 1 },
               requires: {
                 universal: { wisdom: 2 },
-                route: { survival_skills: 1 },
               },
             },
             {
@@ -115,6 +154,13 @@ export const aliceRoute = {
           id: "alice_base",
           speaker: "Alice",
           text: "This is my base. We should be safe here while we figure out what's going on with that dragon.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
         },
         {
           id: "relationship_building",
@@ -146,6 +192,13 @@ export const aliceRoute = {
           id: "alice_vulnerability",
           speaker: "Alice",
           text: "I became a ranger after my village was destroyed by monsters. Sometimes I wonder if I'm strong enough to really protect anyone.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "sad",
+              position: "center",
+            },
+          ],
           choices: [
             {
               text: "Reassure her about her strength and skills",
@@ -174,6 +227,13 @@ export const aliceRoute = {
           speaker: "Alice",
           text: "Hey, you awake still..? I couldn't sleep. Mind if I stay here a while?",
           requires: { route: { alice_romance: 4, alice_bond: 3 } },
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
           choices: [
             {
               text: "Welcome her to stay",
@@ -188,7 +248,7 @@ export const aliceRoute = {
             {
               text: "Admit that you're a bit too tired and prefer to rest alone",
               universalPoints: { courage: 1 },
-              routePoints: { alice_romance: -3, alice_bond: -2 },
+              routePoints: { alice_distance: 1 }, // ← Use different point instead of negative
             },
           ],
         },

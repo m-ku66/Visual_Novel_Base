@@ -17,7 +17,7 @@ export const aliceLive2D: Live2DSprite = {
       // Optional: Gentle sway animation
       animation: {
         y: { from: 0, to: 2 },
-        duration: 3.5,
+        duration: 1.5,
         delay: 0,
         repeat: true,
       },
@@ -32,7 +32,7 @@ export const aliceLive2D: Live2DSprite = {
       zIndex: 11,
       animation: {
         y: { from: 0, to: 1 },
-        duration: 3,
+        duration: 1,
         delay: 0,
         repeat: true,
       },
@@ -47,7 +47,7 @@ export const aliceLive2D: Live2DSprite = {
       zIndex: 12,
       animation: {
         y: { from: 0, to: 1 },
-        duration: 3.2,
+        duration: 1.2,
         delay: 0,
         repeat: true,
       },
@@ -63,7 +63,7 @@ export const aliceLive2D: Live2DSprite = {
       // Breathing animation - subtle up/down
       animation: {
         y: { from: 0, to: -1 },
-        duration: 2.5,
+        duration: 1.5,
         repeat: true,
       },
     },
@@ -120,7 +120,7 @@ export const aliceLive2D: Live2DSprite = {
       // Hair sway animation - slightly delayed from back hair
       animation: {
         y: { from: 0, to: -0.5 },
-        duration: 2.5,
+        duration: 0.5,
         delay: 0.3,
         repeat: true,
       },
@@ -133,7 +133,7 @@ export const aliceLive2D: Live2DSprite = {
       animation: {
         y: { from: 0, to: -1 },
         duration: 3,
-        delay: 0.5,
+        delay: 0.3,
         repeat: true,
       },
     },
@@ -195,6 +195,24 @@ export const aliceLive2D: Live2DSprite = {
         eyes: "happy",
         mouth: "talking",
         brows: "neutral",
+      },
+    },
+
+    sadTalking: {
+      name: "sadTalking",
+      partStates: {
+        eyes: "closed",
+        mouth: "talking",
+        brows: "curved",
+      },
+    },
+
+    sly: {
+      name: "sly",
+      partStates: {
+        eyes: "happy",
+        mouth: "neutral",
+        brows: "pointed",
       },
     },
   },

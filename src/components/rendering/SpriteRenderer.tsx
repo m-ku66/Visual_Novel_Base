@@ -188,8 +188,8 @@ function Live2DSpriteRenderer({ sprite, config }: { sprite: Live2DSprite, config
         >
             <motion.div
                 style={{
-                    width: `${scale * 400}px`,
-                    height: `${scale * 400}px`,
+                    width: `${scale * 600}px`,
+                    height: `${scale * 600}px`,
                     position: "relative",
                 }}
             >

@@ -201,16 +201,23 @@ export const useVNStore = create<VNStore>((set, get) => ({
   // Get current slide with requirement checking
   getCurrentSlide: (): Slide | null => {
     const scene = get().getCurrentScene();
+    if (!scene) {
+      console.log("❌ No scene found");
+      return null;
+    }
     const { currentSlideIndex, checkPointRequirements } = get();
 
     if (!scene || !scene.slides[currentSlideIndex]) return null;
 
     const slide = scene.slides[currentSlideIndex];
+    console.log(`📍 Checking slide ${get().currentSlideIndex}:`, slide?.id);
 
     // Check if slide meets requirements
-    if (slide.requires) {
+    if (slide?.requires) {
       const check = checkPointRequirements(slide.requires);
+      console.log("🔍 Requirements check:", check);
       if (!check.hasRequirements) {
+        console.log("❌ Slide requirements not met");
         return null; // Slide not accessible
       }
     }
@@ -274,20 +281,41 @@ export const useVNStore = create<VNStore>((set, get) => ({
     set({ prologuePoints: newPoints });
   },
 
-  // Advance to next slide in current scene
+  // Advance to next slide in current scene, skipping unreachable slides/scenes
   advanceSlide: () => {
     const scene = get().getCurrentScene();
-    const { currentSlideIndex } = get();
+    const { currentSlideIndex, checkPointRequirements } = get();
 
     if (!scene) return;
 
-    // If we can advance within the current scene
-    if (currentSlideIndex < scene.slides.length - 1) {
-      set({ currentSlideIndex: currentSlideIndex + 1 });
-      return;
+    let nextSlideIndex = currentSlideIndex + 1;
+
+    // Keep looking for a valid slide
+    while (nextSlideIndex < scene.slides.length) {
+      const nextSlide = scene.slides[nextSlideIndex];
+
+      // If slide has no requirements, use it
+      if (!nextSlide.requires) {
+        set({ currentSlideIndex: nextSlideIndex });
+        return;
+      }
+
+      // Check if requirements are met
+      const check = checkPointRequirements(nextSlide.requires);
+      if (check.hasRequirements) {
+        set({ currentSlideIndex: nextSlideIndex });
+        return;
+      }
+
+      // Requirements not met, try next slide
+      console.log(
+        `⏭️ Skipping slide ${nextSlideIndex}: ${nextSlide.id} (requirements not met)`
+      );
+      nextSlideIndex++;
     }
 
-    // Otherwise, advance to next scene
+    // No valid slides left in this scene, advance to next scene
+    console.log("📘 No more valid slides in scene, advancing to next scene");
     get().advanceToNextScene();
   },
 
