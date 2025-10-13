@@ -90,7 +90,7 @@ export function isLive2DSprite(
 export type Slide = {
   id: string;
   speaker?: string;
-  text: string;
+  text?: string;
   choices?: Choice[];
   requires?: PointRequirements;
   background?: string;

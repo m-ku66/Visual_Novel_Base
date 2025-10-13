@@ -64,8 +64,11 @@ export const exampleStory: GameStory = {
           text: "Suddenly, a massive dragon appears in the sky above you, breathing fire and causing panic among the nearby villagers.",
         },
         {
-          id: "child_in_danger",
+          id: "child_in_danger I",
           text: "As people flee in terror, you notice a small child who has fallen and can't get up. The dragon is circling back...",
+        },
+        {
+          id: "child_in_danger II",
           choices: [
             {
               text: "Rush to save the child despite the danger",
@@ -124,8 +127,11 @@ export const exampleStory: GameStory = {
           text: "He has a rugged appearance, with a weathered face and a sturdy build. He carries a large backpack.",
         },
         {
-          id: "magical_energy",
+          id: "magical_energy I",
           text: "As you consider your options, you feel a strange energy building within you...",
+        },
+        {
+          id: "magical_energy II",
           choices: [
             {
               text: "Try to sense the magical energy around you",
@@ -139,8 +145,11 @@ export const exampleStory: GameStory = {
           ],
         },
         {
-          id: "route_choice",
+          id: "route_choice I",
           text: "You have to make a choice quickly - the dragon might return!",
+        },
+        {
+          id: "route_choice II",
           choices: [
             {
               text: "Follow Alice to the forest",

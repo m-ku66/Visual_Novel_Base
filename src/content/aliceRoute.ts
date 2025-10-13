@@ -53,8 +53,18 @@ export const aliceRoute = {
           ],
         },
         {
-          id: "name_response",
+          id: "name_prompt",
           text: "She's asking for your name...",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
+        },
+        {
+          id: "name_response",
           choices: [
             {
               text: "Tell her your name",
@@ -70,6 +80,13 @@ export const aliceRoute = {
               text: "Deflect the question and ask about her instead",
               universalPoints: { kindness: 1, wisdom: 1 },
               routePoints: { alice_mystery: 1, alice_romance: 1 }, // ← Track "mystery" instead
+            },
+          ],
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
             },
           ],
         },
@@ -116,8 +133,18 @@ export const aliceRoute = {
           requires: { route: { alice_deception: 1 } }, // ← Check for deception
         },
         {
-          id: "forest_knowledge_test",
+          id: "forest_knowledge_test I",
           text: "As you walk, Alice tests your forest knowledge and survival instincts.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
+        },
+        {
+          id: "forest_knowledge_test II",
           choices: [
             {
               text: "Share your knowledge of plants and herbs",
@@ -163,8 +190,18 @@ export const aliceRoute = {
           ],
         },
         {
-          id: "relationship_building",
+          id: "relationship_building I",
           text: "Over the next few days, you and Alice work together. Your relationship deepens.",
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
+            },
+          ],
+        },
+        {
+          id: "relationship_building II",
           choices: [
             {
               text: "Focus on learning survival skills from Alice",
@@ -189,7 +226,7 @@ export const aliceRoute = {
           text: "One evening, Alice opens up about her past while you both sit by the fire.",
         },
         {
-          id: "alice_vulnerability",
+          id: "alice_vulnerability I",
           speaker: "Alice",
           text: "I became a ranger after my village was destroyed by monsters. Sometimes I wonder if I'm strong enough to really protect anyone.",
           sprites: [
@@ -199,6 +236,9 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+        },
+        {
+          id: "alice_vulnerability II",
           choices: [
             {
               text: "Reassure her about her strength and skills",
@@ -223,7 +263,7 @@ export const aliceRoute = {
           requires: { route: { alice_romance: 4, alice_bond: 3 } },
         },
         {
-          id: "alice_night II",
+          id: "alice_night II-prompt",
           speaker: "Alice",
           text: "Hey, you awake still..? I couldn't sleep. Mind if I stay here a while?",
           requires: { route: { alice_romance: 4, alice_bond: 3 } },
@@ -234,6 +274,11 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+        },
+        {
+          id: "alice_night II-choices",
+          requires: { route: { alice_romance: 4, alice_bond: 3 } },
+
           choices: [
             {
               text: "Welcome her to stay",
@@ -249,6 +294,13 @@ export const aliceRoute = {
               text: "Admit that you're a bit too tired and prefer to rest alone",
               universalPoints: { courage: 1 },
               routePoints: { alice_distance: 1 }, // ← Use different point instead of negative
+            },
+          ],
+          sprites: [
+            {
+              characterId: "alice",
+              expression: "neutral",
+              position: "center",
             },
           ],
         },
@@ -278,6 +330,13 @@ export const aliceRoute = {
               id: "alice_partnership_offer",
               speaker: "Alice",
               text: "You've really taken to this life. Want to be my partner in protecting these woods?",
+              sprites: [
+                {
+                  characterId: "alice",
+                  expression: "happy",
+                  position: "center",
+                },
+              ],
             },
             {
               id: "guardian_purpose",
@@ -309,6 +368,13 @@ export const aliceRoute = {
               id: "alice_love_confession",
               speaker: "Alice",
               text: "I never expected to find someone like you in this crazy situation. I'm glad you chose to follow me that day.",
+              sprites: [
+                {
+                  characterId: "alice",
+                  expression: "happy",
+                  position: "center",
+                },
+              ],
             },
             {
               id: "forest_love_sunset",
@@ -342,6 +408,13 @@ export const aliceRoute = {
               id: "alice_sage_recognition",
               speaker: "Alice",
               text: "You've become something I've only heard about in legends - a Forest Sage. The very trees speak to you now.",
+              sprites: [
+                {
+                  characterId: "alice",
+                  expression: "surprised",
+                  position: "center",
+                },
+              ],
             },
             {
               id: "legendary_protectors",
