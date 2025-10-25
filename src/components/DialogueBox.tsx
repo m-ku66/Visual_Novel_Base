@@ -1,6 +1,6 @@
 interface DialogueBoxProps {
     speaker?: string;
-    text: string;
+    text?: string;
 }
 
 export function DialogueBox({ speaker, text }: DialogueBoxProps) {

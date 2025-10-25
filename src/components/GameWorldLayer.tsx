@@ -1,4 +1,5 @@
 import { SpriteRenderer } from "./rendering/SpriteRenderer";
+import { BackgroundRenderer } from "./rendering/BackgroundRenderer";
 import type { Slide, GameStory } from "../types/vn";
 
 interface GameWorldLayerProps {
@@ -9,17 +10,13 @@ interface GameWorldLayerProps {
 export function GameWorldLayer({ currentSlide, story }: GameWorldLayerProps) {
     return (
         <div className="fixed inset-0 bg-gradient-to-b from-gray-800 via-gray-900 to-black">
-            {/* Background Image Area */}
+            {/* Enhanced Background System */}
             <div className="absolute inset-0 bg-gray-900">
-                {/* Background image if specified */}
-                {currentSlide.background && (
-                    <img
-                        src={currentSlide.background}
-                        alt="Background"
-                        className="absolute inset-0 w-full h-full object-cover"
-                    />
-                )}
-                {/* Gradient overlay */}
+                <BackgroundRenderer
+                    background={currentSlide.background}
+                />
+
+                {/* Gradient overlay for readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
             </div>
 

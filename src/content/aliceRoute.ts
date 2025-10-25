@@ -11,6 +11,22 @@ export const aliceRoute = {
         {
           id: "forest_cover",
           text: "You follow Alice into the dense forest. The trees provide good cover from the dragon above.",
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.1,
+              saturation: 0.5,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "alice_intro",
@@ -23,6 +39,22 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.9,
+              saturation: 0.9,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "alice_exposition I",
@@ -35,10 +67,42 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.9,
+              saturation: 0.9,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "alice_exposition II",
           text: "She seems knowledgeable about dragons and the world you find yourself in, but is clearly troubled by the recent events. It seems like what happened is out of the ordinary. Maybe you have something to do with it?",
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.9,
+              saturation: 0.9,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "alice_exposition III",
@@ -51,6 +115,22 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.9,
+              saturation: 0.9,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "name_prompt",
@@ -62,6 +142,22 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.9,
+              saturation: 0.9,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         {
           id: "name_response",
@@ -89,6 +185,22 @@ export const aliceRoute = {
               position: "center",
             },
           ],
+          background: {
+            image:
+              "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
+            effects: {
+              brightness: 0.1,
+              saturation: 0.5,
+              overlay: {
+                color: "rgba(0, 150, 255, 0.5)",
+                blendMode: "multiply",
+              },
+              transition: {
+                duration: 1.0,
+                easing: "ease-in-out",
+              },
+            },
+          },
         },
         // Response based on truthfulness
         {

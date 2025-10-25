@@ -85,6 +85,85 @@ export function isLive2DSprite(
   return sprite.type === "live2d";
 }
 
+// --- BACKGROUND SYSTEM ---
+
+export type BackgroundEffect = {
+  // Color grading effects
+  brightness?: number; // 0.0 to 2.0 (default: 1.0)
+  contrast?: number; // 0.0 to 2.0 (default: 1.0)
+  saturation?: number; // 0.0 to 2.0 (default: 1.0)
+  hue?: number; // -180 to 180 degrees (default: 0)
+
+  // Simple overlay effects
+  overlay?: {
+    color: string; // CSS color: "#ff0000", "rgba(255,0,0,0.3)"
+    blendMode?: "multiply" | "overlay" | "screen" | "soft-light";
+  };
+
+  // Transition when changing backgrounds
+  transition?: {
+    duration?: number; // seconds (default: 0.5)
+    easing?: "ease" | "ease-in" | "ease-out" | "ease-in-out";
+  };
+};
+
+export type BackgroundConfig = {
+  image: string; // Path to background image
+  effects?: BackgroundEffect; // Optional effects to apply
+  alt?: string; // Alt text for accessibility
+};
+
+// Union type for backward compatibility
+export type Background = string | BackgroundConfig;
+
+// Type guard helpers
+export function isBackgroundConfig(bg: Background): bg is BackgroundConfig {
+  return typeof bg === "object" && bg !== null && "image" in bg;
+}
+
+export function isBackgroundString(bg: Background): bg is string {
+  return typeof bg === "string";
+}
+
+// Helper to normalize background to config format
+export function normalizeBackground(bg: Background): BackgroundConfig {
+  if (isBackgroundString(bg)) {
+    return { image: bg };
+  }
+  return bg;
+}
+
+// Example usage:
+/*
+// Simple string (backward compatible)
+const slide1: Slide = {
+  id: "scene1",
+  text: "A normal day...",
+  background: "/backgrounds/park.jpg"
+};
+
+// Enhanced background with effects
+const slide2: Slide = {
+  id: "scene2", 
+  text: "The mood darkens...",
+  background: {
+    image: "/backgrounds/park.jpg",
+    effects: {
+      brightness: 0.6,
+      saturation: 0.8,
+      overlay: {
+        color: "rgba(0, 0, 100, 0.3)",
+        blendMode: "multiply"
+      },
+      transition: {
+        duration: 1.0,
+        easing: "ease-in-out"
+      }
+    }
+  }
+};
+*/
+
 // --- SLIDE TYPES ---
 
 export type Slide = {
@@ -93,7 +172,7 @@ export type Slide = {
   text?: string;
   choices?: Choice[];
   requires?: PointRequirements;
-  background?: string;
+  background?: Background;
   mood?: "happy" | "sad" | "tense" | "romantic" | "mysterious";
 
   sprites?: {
