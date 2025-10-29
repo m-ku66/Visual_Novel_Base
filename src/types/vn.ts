@@ -88,24 +88,61 @@ export function isLive2DSprite(
 // --- BACKGROUND SYSTEM ---
 
 export type BackgroundEffect = {
-  // Color grading effects
+  // Color grading effects (existing)
   brightness?: number; // 0.0 to 2.0 (default: 1.0)
   contrast?: number; // 0.0 to 2.0 (default: 1.0)
   saturation?: number; // 0.0 to 2.0 (default: 1.0)
   hue?: number; // -180 to 180 degrees (default: 0)
 
-  // Simple overlay effects
+  // Simple overlay effects (existing)
   overlay?: {
     color: string; // CSS color: "#ff0000", "rgba(255,0,0,0.3)"
     blendMode?: "multiply" | "overlay" | "screen" | "soft-light";
   };
 
-  // Transition when changing backgrounds
+  // Transition when changing backgrounds (existing)
   transition?: {
     duration?: number; // seconds (default: 0.5)
     easing?: "ease" | "ease-in" | "ease-out" | "ease-in-out";
   };
+
+  // 🆕 NEW: Ken Burns zoom animation
+  zoom?: {
+    enabled: boolean; // Enable zoom animation
+    startScale?: number; // Starting zoom (default: 1.0)
+    endScale?: number; // Maximum zoom (default: 1.1, max: 1.2)
+    duration?: number; // Animation duration in seconds (default: 8)
+    direction?: "in" | "out" | "in-out"; // Zoom direction (default: "in-out")
+    easing?: "linear" | "ease-in-out" | "ease-in" | "ease-out";
+    delay?: number; // Delay before starting (default: 0)
+    loop?: boolean; // Loop the animation (default: true)
+  };
 };
+
+// Helper function to validate zoom constraints
+export function validateZoomScale(scale: number): number {
+  // Ensure zoom doesn't go below 1.0 or above 1.2 for safety
+  return Math.max(1.0, Math.min(1.2, scale));
+}
+
+// Helper to create safe zoom configs
+export function createZoomConfig(config: {
+  startScale?: number;
+  endScale?: number;
+  duration?: number;
+  direction?: "in" | "out" | "in-out";
+}): Required<NonNullable<BackgroundEffect["zoom"]>> {
+  return {
+    enabled: true,
+    startScale: validateZoomScale(config.startScale ?? 1.0),
+    endScale: validateZoomScale(config.endScale ?? 1.1),
+    duration: config.duration ?? 8,
+    direction: config.direction ?? "in-out",
+    easing: "ease-in-out",
+    delay: 0,
+    loop: true,
+  };
+}
 
 export type BackgroundConfig = {
   image: string; // Path to background image
@@ -163,6 +200,106 @@ const slide2: Slide = {
   }
 };
 */
+
+/**
+ * // USAGE EXAMPLES - Ken Burns Zoom Effects
+
+// Basic Ken Burns zoom (zoom in slowly then back out)
+const dramaticSlide = {
+  id: "dramatic_moment",
+  speaker: "Alice",
+  text: "This forest holds ancient secrets...",
+  background: {
+    image: "https://images.unsplash.com/your-forest-image",
+    effects: {
+      brightness: 0.8,
+      saturation: 1.1,
+      zoom: {
+        enabled: true,
+        startScale: 1.0,      // Start at normal size
+        endScale: 1.15,       // Zoom to 115%
+        duration: 10,         // 10 second cycle
+        direction: "in-out",  // Zoom in, then back out
+        easing: "ease-in-out"
+      }
+    }
+  }
+};
+
+// Slow zoom in for tension
+const tensionSlide = {
+  id: "building_tension", 
+  speaker: "Narrator",
+  text: "Something was watching from the shadows...",
+  background: {
+    image: "https://images.unsplash.com/dark-forest",
+    effects: {
+      brightness: 0.6,
+      contrast: 1.2,
+      overlay: {
+        color: "rgba(0, 0, 0, 0.3)",
+        blendMode: "multiply"
+      },
+      zoom: {
+        enabled: true,
+        startScale: 1.0,
+        endScale: 1.1,
+        duration: 15,        // Very slow 15 second zoom
+        direction: "in",     // Only zoom in, don't zoom back
+        easing: "ease-in",
+        loop: false          // Don't loop, just zoom once
+      }
+    }
+  }
+};
+
+// Quick zoom for action
+const actionSlide = {
+  id: "action_scene",
+  speaker: "Alice", 
+  text: "Look out!",
+  background: {
+    image: "https://images.unsplash.com/action-scene",
+    effects: {
+      brightness: 1.1,
+      saturation: 1.3,
+      zoom: {
+        enabled: true,
+        startScale: 1.05,    // Start slightly zoomed
+        endScale: 1.15,      // Quick zoom in
+        duration: 3,         // Fast 3 second cycle
+        direction: "in-out",
+        easing: "ease-out"
+      }
+    }
+  }
+};
+
+// Using the helper function for safety
+const safeSlide = {
+  id: "safe_example",
+  text: "Helper function ensures safe zoom levels",
+  background: {
+    image: "/backgrounds/scene.jpg",
+    effects: {
+      // This helper prevents zoom levels that are too extreme
+      zoom: createZoomConfig({
+        startScale: 0.8,     // Too low - will be clamped to 1.0
+        endScale: 1.5,       // Too high - will be clamped to 1.2
+        duration: 6,
+        direction: "in-out"
+      })
+    }
+  }
+};
+
+export const zoomExamples = [
+  dramaticSlide, 
+  tensionSlide, 
+  actionSlide, 
+  safeSlide
+];
+ */
 
 // --- SLIDE TYPES ---
 
