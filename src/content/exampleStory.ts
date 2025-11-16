@@ -1,5 +1,5 @@
 import type { GameStory } from "../types/vn";
-import { aliceRoute } from "./aliceRoute";
+import { aliceRoute } from "./aliceRoute/aliceRoute";
 import { bobRoute } from "./bobRoute";
 import { unityRoute } from "./unityRoute";
 import { characters } from "./characters";

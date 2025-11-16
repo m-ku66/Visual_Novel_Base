@@ -215,6 +215,15 @@ export const aliceLive2D: Live2DSprite = {
         brows: "pointed",
       },
     },
+
+    asking: {
+      name: "asking",
+      partStates: {
+        eyes: "neutral",
+        mouth: "neutral",
+        brows: "curved",
+      },
+    },
   },
 };
 
