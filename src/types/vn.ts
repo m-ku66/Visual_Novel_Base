@@ -301,6 +301,154 @@ export const zoomExamples = [
 ];
  */
 
+// =============================================
+// AUDIO SYSTEM TYPE DEFINITIONS
+// Add these to your existing src/types/vn.ts file
+// =============================================
+
+/**
+ * Audio fade configuration for smooth transitions
+ */
+export type AudioFade = {
+  duration: number; // Fade duration in seconds
+  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
+};
+
+/**
+ * Background Music (BGM) configuration for a slide
+ */
+export type BGMConfig = {
+  src: string; // Path to audio file (mp3, ogg, wav)
+  loop?: boolean; // Whether to loop the track (default: true)
+  volume?: number; // Volume level 0.0 - 1.0 (default: 1.0)
+  fadeIn?: AudioFade; // Fade in when starting
+  fadeOut?: AudioFade; // Fade out when stopping
+};
+
+/**
+ * Sound Effect (SFX) configuration
+ */
+export type SFXConfig = {
+  src: string; // Path to audio file
+  volume?: number; // Volume level 0.0 - 1.0 (default: 1.0)
+  trigger?: "onLoad" | "onClick" | "onChoice"; // When to play the SFX
+  delay?: number; // Delay before playing in seconds
+  loop?: boolean; // Whether to loop (default: false)
+};
+
+/**
+ * Complete audio configuration for a slide
+ */
+export type AudioConfig = {
+  bgm?: BGMConfig; // Background music for this slide
+  sfx?: SFXConfig[]; // Sound effects for this slide
+  stopPreviousBGM?: boolean; // Stop previous BGM before playing new one (default: true)
+};
+
+// =============================================
+// UPDATE YOUR EXISTING SLIDE TYPE
+// =============================================
+// Add this property to your existing Slide interface:
+//
+// export type Slide = {
+//   id: string;
+//   speaker?: string;
+//   text?: string;
+//   choices?: Choice[];
+//   requires?: PointRequirements;
+//   background?: Background;
+//   mood?: "happy" | "sad" | "tense" | "romantic" | "mysterious";
+//   sprites?: { ... }[];
+//   audio?: AudioConfig; // <-- ADD THIS LINE
+// };
+
+// =============================================
+// USAGE EXAMPLES
+// =============================================
+
+/* 
+// Example 1: Simple BGM on a slide
+const peacefulSlide: Slide = {
+  id: "village_intro",
+  text: "You arrive at a peaceful village...",
+  background: "/backgrounds/village.jpg",
+  audio: {
+    bgm: {
+      src: "/audio/bgm/peaceful-town.mp3",
+      loop: true,
+      volume: 0.7
+    }
+  }
+};
+
+// Example 2: BGM with smooth crossfade
+const tensionSlide: Slide = {
+  id: "approaching_danger",
+  text: "Something feels wrong...",
+  background: "/backgrounds/dark-forest.jpg",
+  audio: {
+    bgm: {
+      src: "/audio/bgm/tension.mp3",
+      loop: true,
+      volume: 0.8,
+      fadeIn: { duration: 2, easing: "ease-in" },
+      fadeOut: { duration: 1.5, easing: "ease-out" }
+    }
+  }
+};
+
+// Example 3: BGM + Sound Effects
+const choiceSlide: Slide = {
+  id: "important_decision",
+  text: "You must choose your path...",
+  audio: {
+    bgm: {
+      src: "/audio/bgm/decision.mp3",
+      loop: true,
+      volume: 0.6
+    },
+    sfx: [
+      {
+        src: "/audio/sfx/choice-appear.wav",
+        trigger: "onLoad",
+        volume: 0.5
+      },
+      {
+        src: "/audio/sfx/choice-select.wav",
+        trigger: "onChoice",
+        volume: 0.7
+      }
+    ]
+  }
+};
+
+// Example 4: Only SFX, no BGM change
+const dialogueSlide: Slide = {
+  id: "door_knock",
+  speaker: "Narrator",
+  text: "*knock knock*",
+  audio: {
+    sfx: [
+      {
+        src: "/audio/sfx/door-knock.wav",
+        trigger: "onLoad",
+        volume: 0.8,
+        delay: 0.5
+      }
+    ]
+  }
+};
+
+// Example 5: Stop BGM entirely
+const silentSlide: Slide = {
+  id: "moment_of_silence",
+  text: "...",
+  audio: {
+    stopPreviousBGM: true // This will fade out and stop any playing BGM
+  }
+};
+*/
+
 // --- SLIDE TYPES ---
 
 export type Slide = {
@@ -327,6 +475,7 @@ export type Slide = {
     partOverrides?: Record<string, string>; // Override specific parts
     // Example: { mouth: "smile", eyes: "wink" } overrides just those parts
   }[];
+  audio?: AudioConfig;
 };
 
 export type Scene = {

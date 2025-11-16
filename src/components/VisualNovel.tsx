@@ -13,6 +13,8 @@ import { NavigationControls } from './NavigationControls';
 import { CompletionScreen } from './CompletionScreen';
 import { LoadingScreen } from './LoadingScreen';
 import { DebugPanel } from './DebugPanel';
+import { AudioManager, useAudio } from "./AudioManager";
+
 
 interface VisualNovelProps {
     story: GameStory;
@@ -41,6 +43,7 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
         loadStory(story);
     }, [story, loadStory]);
 
+    const { playChoiceSFX, playClickSFX } = useAudio();
     const currentSlide = getCurrentSlide();
     const filteredChoices = getFilteredChoices();
     const debugInfo = getDebugInfo();
@@ -88,8 +91,13 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
 
     // Handle choice selection
     const handleMakeChoice = (index: number) => {
+        playChoiceSFX(currentSlide); // Play choice SFX
         makeChoice(index);
-        setShowChoiceModal(false);
+    };
+
+    const handleAdvance = () => {
+        playClickSFX(currentSlide); // Play click SFX
+        advanceSlide();
     };
 
     // Handle manual modal close (from modal's close button/backdrop)
@@ -133,6 +141,8 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
 
     return (
         <div className={`font-serif text-white min-h-screen overflow-hidden ${className}`}>
+            <AudioManager currentSlide={currentSlide} />
+
             {/* Full-screen game world */}
             <GameWorldLayer currentSlide={currentSlide} story={story} />
 
@@ -164,6 +174,7 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
                     <DialogueBox
                         speaker={currentSlide.speaker}
                         text={currentSlide.text}
+                        onAdvance={handleAdvance}
                     />
                 </UIElement>
 

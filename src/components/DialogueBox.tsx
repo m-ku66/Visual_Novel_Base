@@ -1,9 +1,14 @@
 interface DialogueBoxProps {
     speaker?: string;
     text?: string;
+    onAdvance?: () => void;
 }
 
-export function DialogueBox({ speaker, text }: DialogueBoxProps) {
+export function DialogueBox({ speaker, text, onAdvance }: DialogueBoxProps) {
+    if (!text) return null;
+    // handle onAdvance
+    if (onAdvance) onAdvance();
+
     return (
         <div className="bg-black/80 backdrop-blur-sm border border-gray-600 rounded-lg p-6 max-w-4xl mx-auto">
             {/* Speaker name */}
