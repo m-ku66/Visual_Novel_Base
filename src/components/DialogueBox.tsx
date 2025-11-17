@@ -6,11 +6,9 @@ interface DialogueBoxProps {
 
 export function DialogueBox({ speaker, text, onAdvance }: DialogueBoxProps) {
     if (!text) return null;
-    // handle onAdvance
-    if (onAdvance) onAdvance();
 
     return (
-        <div className="bg-black/80 backdrop-blur-sm border border-gray-600 rounded-lg p-6 max-w-4xl mx-auto">
+        <div onClick={onAdvance} className="bg-black/80 backdrop-blur-sm border border-gray-600 rounded-lg p-6 max-w-4xl mx-auto">
             {/* Speaker name */}
             {speaker && (
                 <div className="font-bold text-yellow-400 mb-3 text-lg">

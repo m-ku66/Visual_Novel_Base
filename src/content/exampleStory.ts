@@ -58,6 +58,14 @@ export const exampleStory: GameStory = {
         {
           id: "dragon_appears I",
           text: "Things quickly take a turn for the worse when you hear a deafening roar.",
+          audio: {
+            bgm: {
+              src: "/audio/bgm/dragon.mp3",
+              loop: true,
+              volume: 0.5,
+              fadeIn: { duration: 2, easing: "ease-in" },
+            },
+          },
         },
         {
           id: "dragon_appears II",
@@ -96,6 +104,14 @@ export const exampleStory: GameStory = {
         {
           id: "dragon_aftermath",
           text: "The dragon eventually flies away, leaving destruction in its wake. Two strangers approach you.",
+          audio: {
+            bgm: {
+              src: "/audio/bgm/onwards.mp3",
+              loop: true,
+              volume: 0.5,
+              fadeIn: { duration: 2, easing: "ease-in" },
+            },
+          },
         },
         {
           id: "impressed_strangers",

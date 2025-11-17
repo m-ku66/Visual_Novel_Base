@@ -456,6 +456,14 @@ export const aliceRoute = {
         {
           id: "evening_reflection",
           text: "One evening, Alice opens up about her past while you both sit by the fire.",
+          audio: {
+            bgm: {
+              src: "/audio/bgm/campfire.mp3",
+              loop: true,
+              volume: 0.5,
+              fadeIn: { duration: 2, easing: "ease-in" },
+            },
+          },
         },
         {
           id: "alice_vulnerability I",
