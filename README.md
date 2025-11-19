@@ -1,102 +1,199 @@
-# Visual Novel System Base
+# Visual Novel Engine
 
-A lightweight, exportable visual novel system for React + Zustand with a sophisticated hybrid point system for complex branching narratives.
+A complete, production-ready visual novel framework built with React, TypeScript, and Zustand. Features a sophisticated hybrid point system, dynamic branching narratives, sprite rendering, audio system, and polished UI animations.
 
-## ✨ Features Overview
+**Built for portability** - Works in any React environment: Vite, Next.js, Electron, and more.
 
-- **Hybrid Point System**: Universal, route-specific, and prologue points
-- **Conditional Content**: Choices and scenes that appear based on player progression
-- **Smart Ending Selection**: Priority-based ending determination with multiple requirements
-- **Secret Content**: Hidden routes and endings unlocked through specific choices
-- **Achievement System**: Track player accomplishments and unlocked endings
-- **Real-time Point Visualization**: See point gains and current totals
-- **Modular Architecture**: Easy to extend and customize
+---
+
+## ✨ Features
+
+### Core Systems
+
+- **🎯 Hybrid Point System** - Universal, route-specific, and prologue points for complex branching
+- **🌿 Dynamic Branching** - Multiple routes with conditional content based on player choices
+- **🎭 Character Sprites** - Support for both simple sprites and layered Live2D-style characters
+- **🖼️ Enhanced Backgrounds** - Color grading, overlays, and Ken Burns zoom effects
+- **🎵 Full Audio System** - BGM with crossfading, SFX triggers, and volume controls
+- **📝 Typewriter Dialogue** - Classic VN-style text animation with skip functionality
+- **✨ Polished UI** - Smooth Motion animations throughout
+
+### Player Experience
+
+- **📊 Real-time Point Tracking** - See your progression with color-coded point displays
+- **🎮 Smart Choice System** - Conditional choices that appear based on requirements
+- **🏆 Achievement System** - Track unlocked endings and secret content
+- **🔇 Audio Controls** - Prominent mute button + adjustable volume settings
+- **⌨️ Keyboard Navigation** - Full keyboard support for choices and progression
+- **🎨 Professional Presentation** - Fixed-size dialogue boxes, smooth transitions, responsive design
+
+---
 
 ## 📖 Story Structure
 
+This engine follows the classic visual novel structure:
+
 ```
-Prologue (shared) ──┐
-                    ├── Route A ──┬── Ending A1 (friendship)
-                    │             ├── Ending A2 (romance)
-                    │             └── Ending A3 (secret/sage)
-                    ├── Route B ──┬── Ending B1 (scholar)
-                    │             ├── Ending B2 (mage)
-                    │             └── Ending B3 (secret/archmage)
-                    └── Unity Route ──── Ending U1 (secret/leader)
-                                     (requires prologue leadership)
+Prologue (shared)
+    ↓
+┌───┴───┬───────┬───────┐
+│       │       │       │
+Route A Route B Route C ...
+│       │       │
+├─┬─┬─┐ ├─┬─┬─┐ ├─┬─┬─┐
+│ │ │ │ │ │ │ │ │ │ │ │
+Endings Endings Endings
 ```
 
-## 🎯 Point System Architecture
+**Example Flow:**
 
-### Three Point Types Working Together:
+```
+Prologue → Route Selection → Character Route → Ending Determination → Completion
+```
 
-1. **Universal Points** - Carry across all routes
+---
 
-   - `courage`, `kindness`, `wisdom`, `magic`
+## 🎯 Point System
+
+### Three Point Types Working Together
+
+1. **Universal Points** (Blue)
+
+   - Carry across all routes
+   - Examples: `courage`, `kindness`, `wisdom`, `magic`
    - Affect route access and ending requirements
-   - Display in blue in the UI
 
-2. **Prologue Points** - Early choices that matter
+2. **Prologue Points** (Purple)
 
-   - `dragon_encounter`, `leadership`
-   - Determine which routes become available
-   - Display in purple in the UI
+   - Earned during the shared prologue
+   - Examples: `dragon_encounter`, `leadership`
+   - Determine which routes unlock
 
-3. **Route Points** - Relationship and skill progression
-   - `alice_bond`, `bob_trust`, `survival_skills`
-   - Specific to each route's narrative
-   - Display in green in the UI
+3. **Route Points** (Green)
+   - Specific to each character route
+   - Examples: `alice_bond`, `bob_trust`
+   - Determine which ending you get
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### For a New Project
 
 ```bash
-npm install zustand react react-dom
+# 1. Create new Vite + React + TypeScript project
+npm create vite@latest my-vn-game -- --template react-ts
+cd my-vn-game
+
+# 2. Install dependencies
+npm install zustand motion
+
+# 3. Install dev dependencies (if not already included)
+npm install -D tailwindcss autoprefixer postcss
+npx tailwindcss init -p
+
+# 4. Copy the VN engine files (see structure below)
+
+# 5. Run
+npm run dev
 ```
 
-### 2. Copy Files
+### For an Existing Project
 
-Copy these files into your React project:
+**Step 1: Install Dependencies**
 
-- `types/vn.ts` - Types with point system
-- `stores/vnStore.ts` - Main game store with point logic
-- `components/VisualNovel.tsx` - UI component
-- `content/exampleStory.ts` - Complete example story
-
-### 3. Use in Your App
-
-```tsx
-import { VisualNovel } from "./components/VisualNovel";
-import { exampleStory } from "./content/exampleStory";
-
-function App() {
-  return <VisualNovel story={exampleStory} />;
-}
+```bash
+npm install zustand motion
+# If you don't have Tailwind CSS:
+npm install -D tailwindcss autoprefixer postcss
+npx tailwindcss init -p
 ```
 
-## 🏗️ Creating Your Story
+**Step 2: Copy Engine Files**
 
-### Object-Based Story Structure
+Copy the entire VN engine into your project:
+
+```
+your-project/
+└── src/
+    ├── vn-engine/              ← Copy everything here
+    │   ├── components/
+    │   │   ├── VisualNovel.tsx
+    │   │   ├── DialogueBox.tsx
+    │   │   ├── ChoiceModal.tsx
+    │   │   ├── AudioManager.tsx
+    │   │   ├── GameWorldLayer.tsx
+    │   │   ├── SpriteRenderer.tsx
+    │   │   ├── BackgroundRenderer.tsx
+    │   │   └── ... (all UI components)
+    │   ├── stores/
+    │   │   ├── vnStore.ts
+    │   │   └── audioStore.ts
+    │   ├── types/
+    │   │   ├── vn.ts
+    │   │   └── ui.ts
+    │   └── content/
+    │       └── exampleStory.ts
+    └── App.tsx
+```
+
+**Step 3: Configure Tailwind** (if needed)
+
+Update your `tailwind.config.js`:
+
+```javascript
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+**Step 4: Add Assets**
+
+Create directories for your game assets:
+
+```
+public/
+├── audio/
+│   ├── bgm/
+│   │   ├── theme.mp3
+│   │   └── tension.mp3
+│   └── sfx/
+│       ├── click.wav
+│       └── choice.wav
+├── sprites/
+│   ├── alice/
+│   └── bob/
+└── backgrounds/
+    ├── forest.jpg
+    └── village.jpg
+```
+
+**Step 5: Create Your Story**
 
 ```typescript
-import { GameStory } from "./types/vn";
+// src/content/myStory.ts
+import type { GameStory } from "../vn-engine/types/vn";
 
 export const myStory: GameStory = {
-  title: "My Epic Adventure",
-  description: "A tale of courage and friendship",
+  title: "My Visual Novel",
+  description: "An epic adventure",
 
-  // Define your point types (optional but recommended)
-  pointTypes: {
-    universal: {
-      courage: "Courage",
-      wisdom: "Wisdom",
-    },
-    prologue: {
-      first_choice: "First Impression",
-    },
-    route: {
-      character_bond: "Character Bond",
+  // Define your characters
+  characters: {
+    alice: {
+      type: "simple",
+      id: "alice",
+      name: "Alice",
+      baseImage: "/sprites/alice-neutral.png",
+      expressions: {
+        happy: "/sprites/alice-happy.png",
+        sad: "/sprites/alice-sad.png",
+      },
+      defaultExpression: "happy",
     },
   },
 
@@ -107,12 +204,23 @@ export const myStory: GameStory = {
       slides: [
         {
           id: "opening",
-          text: "Your story starts here...",
+          speaker: "Narrator",
+          text: "Your adventure begins...",
+          background: {
+            image: "/backgrounds/village.jpg",
+          },
+          audio: {
+            bgm: {
+              src: "/audio/bgm/theme.mp3",
+              loop: true,
+              volume: 0.7,
+              fadeIn: { duration: 2, easing: "ease-in" },
+            },
+          },
           choices: [
             {
               text: "Be brave",
               universalPoints: { courage: 2 },
-              prologuePoints: { first_choice: 1 },
             },
             {
               text: "Be cautious",
@@ -125,242 +233,454 @@ export const myStory: GameStory = {
   ],
 
   routes: {
-    hero_route: {
-      id: "hero_route",
-      name: "Hero's Path",
-      // Route only accessible with courage
-      requires: { universal: { courage: 2 } },
-      scenes: [
-        /* your scenes */
-      ],
-      endings: [
-        {
-          id: "true_hero",
-          name: "True Hero",
-          priority: 3, // Higher priority = preferred ending
-          requires: {
-            universal: { courage: 5 },
-            route: { character_bond: 3 },
-          },
-          scenes: [
-            /* ending scenes */
-          ],
-        },
-      ],
-    },
+    // Your character routes here
   },
 };
 ```
 
-### Adding Conditional Content
+**Step 6: Use in Your App**
 
 ```typescript
-// Choices that only appear with certain points
-{
-  id: "magic_choice",
-  text: "Use your magical knowledge",
-  choices: [
-    {
-      text: "Cast a healing spell",
-      requires: { universal: { magic: 3 } }, // Only shows if player has 3+ magic
-      universalPoints: { magic: 1, kindness: 2 },
-      routePoints: { character_bond: 3 }
-    }
-  ]
+// src/App.tsx
+import { VisualNovel } from "./vn-engine/components/VisualNovel";
+import { myStory } from "./content/myStory";
+
+function App() {
+  return <VisualNovel story={myStory} />;
 }
 
-// Scenes that require specific progression
-{
-  id: "secret_scene",
-  title: "Hidden Knowledge",
-  requires: {
-    universal: { wisdom: 4 },
-    prologue: { scholar_path: 1 }
-  },
-  slides: [/* secret content */]
-}
+export default App;
 ```
 
-### Creating Secret Endings
+**That's it!** Your VN engine is now integrated. 🎉
 
-```typescript
-{
-  id: "secret_master",
-  name: "Secret Master Ending",
-  isSecretEnding: true,
-  achievementName: "Master of All Arts",
-  priority: 10, // Highest priority
-  requires: {
-    universal: { courage: 5, wisdom: 5, magic: 5 },
-    route: { perfect_bond: 5 }
-  },
-  scenes: [/* epic secret ending */]
-}
-```
+---
 
-## 💡 Advanced Features
+## 🎮 Platform Support
 
-### ✅ Currently Implemented
+| Platform             | Support    | Notes                                  |
+| -------------------- | ---------- | -------------------------------------- |
+| **Vite + React**     | ✅ Full    | Built with this                        |
+| **Electron**         | ✅ Full    | Works seamlessly (Electron = Chromium) |
+| **Next.js**          | ✅ Full    | Standard React components              |
+| **Create React App** | ✅ Full    | Drop-in compatible                     |
+| **React Native**     | ⚠️ Partial | Needs styling adjustments              |
 
-- **Hybrid Point System**: Universal, route, and prologue points
-- **Conditional Choices**: Options that appear based on player progression
-- **Smart Ending Selection**: Priority-based with multiple requirements
-- **Secret Content**: Hidden routes and endings
-- **Real-time UI**: Point tracking with hover previews
-- **Achievement System**: Track unlocked endings
-- **Enhanced Debug Tools**: Comprehensive progression tracking
-- **Point Visualization**: Color-coded point types in UI
-- **Requirement Filtering**: Automatic choice/scene filtering
-- **Character Sprite Suite**: Visual character representations
-- **Background Image Suite**: Scene-specific backgrounds
-- **Sound Effect Suite**: Audio feedback for choices
-- **Point History**: Track how points were earned
+**Why it's portable:** This engine uses standard React patterns with no environment-specific dependencies. It works anywhere React works!
 
-### 🚧 Future Enhancements (For when life is easier lol)
+---
 
-- **File Structure and Asset Polish**: Making this code presentable to laymen
-
-## 📂 File Structure
+## 📂 Project Structure
 
 ```
 src/
-├── types/
-│   └── vn.ts           # Enhanced types with point system
-├── stores/
-│   └── vnStore.ts      # Zustand store with point logic
-├── components/
-│   └── VisualNovel.tsx # Enhanced UI with point display
-├── content/
-│   └── exampleStory.ts # Full-featured example story
-└── App.tsx             # Usage example
+├── vn-engine/
+│   ├── components/
+│   │   ├── VisualNovel.tsx          # Main component
+│   │   ├── DialogueBox.tsx          # Typewriter dialogue
+│   │   ├── ChoiceModal.tsx          # Animated choice selection
+│   │   ├── AudioManager.tsx         # BGM/SFX controller
+│   │   ├── GameWorldLayer.tsx       # Background + sprites
+│   │   ├── SpriteRenderer.tsx       # Character rendering
+│   │   ├── BackgroundRenderer.tsx   # Background effects
+│   │   ├── UIGridOverlay.tsx        # UI positioning system
+│   │   ├── PhaseIndicator.tsx       # Route progress
+│   │   ├── PointDisplay.tsx         # Point tracking UI
+│   │   ├── NavigationControls.tsx   # Mute/debug buttons
+│   │   ├── ChoiceModal.tsx          # Choice selection UI
+│   │   ├── CompletionScreen.tsx     # Ending screen
+│   │   └── ... (other UI components)
+│   │
+│   ├── stores/
+│   │   ├── vnStore.ts               # Game state management
+│   │   └── audioStore.ts            # Audio state management
+│   │
+│   ├── types/
+│   │   ├── vn.ts                    # Core type definitions
+│   │   └── ui.ts                    # UI type definitions
+│   │
+│   └── content/
+│       └── exampleStory.ts          # Example game story
+│
+└── App.tsx                           # Your app entry point
 ```
 
-## 🎨 Customization
+---
 
-### Point System Configuration
+## 🎨 Feature Details
+
+### Audio System 🎵
+
+Full-featured audio with crossfading and volume control:
 
 ```typescript
-// Customize point types for your story
-pointTypes: {
-  universal: {
-    strength: "Physical Strength",
-    intelligence: "Intelligence",
-    charisma: "Charisma"
-  },
-  prologue: {
-    background: "Character Background",
-    motivation: "Core Motivation"
-  },
-  route: {
-    trust_alice: "Trust with Alice",
-    magic_mastery: "Magical Mastery"
+{
+  id: "dramatic_scene",
+  text: "Something feels wrong...",
+  audio: {
+    bgm: {
+      src: "/audio/bgm/tension.mp3",
+      loop: true,
+      volume: 0.8,
+      fadeIn: { duration: 2, easing: "ease-in" },
+      fadeOut: { duration: 1.5, easing: "ease-out" }
+    },
+    sfx: [
+      {
+        src: "/audio/sfx/thunder.wav",
+        trigger: "onLoad",
+        volume: 0.6
+      }
+    ]
   }
 }
 ```
 
-### UI Styling
+Features:
 
-The component uses Tailwind CSS classes and can be customized:
+- ✅ BGM with smooth crossfading
+- ✅ Multiple SFX triggers (onLoad, onClick, onChoice)
+- ✅ Volume controls per track
+- ✅ Prominent mute button
+- ✅ Automatic cleanup on game reset
 
-```tsx
-// Override the main container
-<VisualNovel story={myStory} className="my-custom-styles" />
+### Sprite System 🎭
 
-// The component includes:
-// - Point indicators (blue/green/purple)
-// - Hover effects showing point gains
-// - Responsive design
-// - Dark theme by default
-```
+Support for both simple and layered sprites:
 
-### Story Content Organization
+**Simple Sprites:**
 
 ```typescript
-// Organize large stories across multiple files
-import { prologueScenes } from "./prologue";
-import { aliceRoute } from "./routes/alice";
-import { bobRoute } from "./routes/bob";
-
-export const myStory: GameStory = {
-  prologue: prologueScenes,
-  routes: {
-    alice: aliceRoute,
-    bob: bobRoute,
-  },
-};
-```
-
-## 🔧 Integration Examples
-
-### Next.js with TypeScript
-
-```typescript
-// pages/visual-novel.tsx
-import { VisualNovel } from "../components/VisualNovel";
-import { myStory } from "../content/myStory";
-
-export default function VNPage() {
-  return (
-    <div className="min-h-screen bg-gray-900">
-      <VisualNovel story={myStory} />
-    </div>
-  );
+{
+  type: "simple",
+  id: "alice",
+  name: "Alice",
+  baseImage: "/sprites/alice-neutral.png",
+  expressions: {
+    happy: "/sprites/alice-happy.png",
+    sad: "/sprites/alice-sad.png"
+  }
 }
 ```
 
-### Vite + React
+**Live2D-Style Layered Sprites:**
 
 ```typescript
-// src/pages/Game.tsx
-import { VisualNovel } from "../components/VisualNovel";
-import { adventureStory } from "../content/adventure";
-
-export function GamePage() {
-  return <VisualNovel story={adventureStory} />;
+{
+  type: "live2d",
+  id: "protagonist",
+  name: "Hero",
+  parts: [
+    {
+      id: "body",
+      image: "/sprites/hero/body.png",
+      zIndex: 1
+    },
+    {
+      id: "mouth",
+      image: "/sprites/hero/mouth-neutral.png",
+      zIndex: 3,
+      variants: {
+        happy: "/sprites/hero/mouth-happy.png",
+        sad: "/sprites/hero/mouth-sad.png"
+      }
+    },
+    // ... more parts
+  ],
+  expressions: {
+    happy: {
+      name: "happy",
+      partStates: { mouth: "happy", eyes: "open" }
+    }
+  }
 }
 ```
 
-### Electron Desktop App
+### Background Effects 🖼️
 
-Works seamlessly - just include in your React renderer process.
+Advanced background rendering with effects:
 
-## 📊 Example Point Flow
+```typescript
+{
+  background: {
+    image: "/backgrounds/forest.jpg",
+    effects: {
+      // Color grading
+      brightness: 0.8,
+      contrast: 1.2,
+      saturation: 1.3,
+      hue: 10,
 
+      // Overlay
+      overlay: {
+        color: "rgba(0, 50, 100, 0.3)",
+        blendMode: "multiply"
+      },
+
+      // Ken Burns zoom effect
+      zoom: {
+        enabled: true,
+        startScale: 1.0,
+        endScale: 1.1,
+        duration: 8,
+        direction: "in",
+        easing: "ease-in-out"
+      }
+    }
+  }
+}
 ```
-Player starts with 0 points
-├── Prologue Choice 1: "Save the child"
-│   └── Gains: +3 courage, +2 kindness, +2 dragon_encounter
-├── Prologue Choice 2: "Sense magic"
-│   └── Gains: +2 magic, +1 wisdom (requires 1 wisdom)
-└── Route Selection: Alice Route unlocked
-    ├── Route Choice 1: "Share herb knowledge"
-    │   └── Gains: +1 wisdom, +2 alice_bond (requires 2 wisdom)
-    └── Ending: "Forest Sage" unlocked
-        └── Requires: 4 magic, 4 wisdom, 3 alice_bond ✓
-```
 
-## 🏆 Best Practices
+### Animated UI ✨
 
-1. **Start Simple**: Begin with 2-3 universal points and basic routes
-2. **Test Requirements**: Use debug mode to verify point requirements
-3. **Balance Progression**: Ensure multiple paths to important content
-4. **Clear Feedback**: Use descriptive point names and choice descriptions
-5. **Secret Content**: Hide special endings behind meaningful achievements
-6. **Modular Design**: Keep routes and scenes in separate functions/files
+Smooth Motion animations throughout:
 
-## 🎮 Player Experience Features
-
-- **Point Transparency**: Hover over choices to see point gains
-- **Progress Tracking**: Real-time point totals in the header
-- **Achievement System**: Visual feedback for unlocked endings
-- **Smart Filtering**: Impossible choices are hidden, not grayed out
-- **Rich Completion**: Final stats screen with all earned points
-- **Replay Value**: Different choices lead to genuinely different experiences
-
-## 📄 License
-
-MIT - Use freely in any project! Perfect for game jams, portfolio projects, or commercial visual novels.
+- **DialogueBox**: Typewriter effect with blinking cursor
+- **ChoiceModal**: Staggered button animations with bounce effect
+- **Sprites**: Fade/slide transitions
+- **Backgrounds**: Smooth crossfading between scenes
 
 ---
 
-**Ready to create your epic visual novel?** Start with the example story and customize from there!
+## 🎯 Creating Content
+
+### Basic Scene Structure
+
+```typescript
+{
+  id: "forest_entrance",
+  title: "Forest Path",
+  slides: [
+    {
+      id: "slide_1",
+      speaker: "Alice",
+      text: "This forest gives me the creeps...",
+      background: {
+        image: "/backgrounds/forest.jpg"
+      },
+      sprites: [
+        {
+          characterId: "alice",
+          expression: "worried",
+          position: "center"
+        }
+      ],
+      choices: [
+        {
+          text: "Press forward bravely",
+          universalPoints: { courage: 2 },
+          routePoints: { alice_bond: 1 }
+        },
+        {
+          text: "Suggest turning back",
+          universalPoints: { wisdom: 1 }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Conditional Content
+
+Show choices only when requirements are met:
+
+```typescript
+{
+  text: "Use your magic to light the way",
+  requires: { universal: { magic: 3 } },
+  universalPoints: { magic: 1 },
+  routePoints: { alice_bond: 2 }
+}
+```
+
+### Secret Endings
+
+High-priority endings with strict requirements:
+
+```typescript
+{
+  id: "true_ending",
+  name: "True Ending",
+  isSecretEnding: true,
+  priority: 10,
+  requires: {
+    universal: { courage: 5, wisdom: 5, magic: 5 },
+    route: { alice_bond: 10 }
+  },
+  scenes: [/* epic conclusion */]
+}
+```
+
+---
+
+## 🎮 Controls
+
+### Keyboard
+
+- **Space / Enter** - Advance dialogue (when text is complete)
+- **ESC** - Open/close choice modal
+- **↑/↓** - Navigate choices
+- **Enter** - Select choice
+
+### Mouse
+
+- **Click dialogue box** - Advance or complete text
+- **Click choice** - Make selection
+- **Click backdrop** - Close modal
+
+---
+
+## 🔧 Customization
+
+### Typing Speed
+
+```typescript
+// In DialogueBox.tsx
+const TYPING_SPEED = 50; // Characters per second
+// 30 = slow/dramatic
+// 50 = normal
+// 80 = fast
+```
+
+### UI Colors
+
+All UI uses Tailwind classes - customize in your tailwind.config:
+
+```javascript
+theme: {
+  extend: {
+    colors: {
+      // Override default colors
+    }
+  }
+}
+```
+
+### Animation Timing
+
+All animations use Motion - adjust durations in component files:
+
+```typescript
+transition={{ duration: 0.3 }} // Make faster/slower
+```
+
+---
+
+## 🏗️ Architecture
+
+### State Management (Zustand)
+
+- **vnStore** - Game progression, points, scenes
+- **audioStore** - BGM, SFX, volume controls
+
+### Modular Components
+
+Each component handles one responsibility:
+
+- `VisualNovel` - Main orchestrator
+- `GameWorldLayer` - Visual rendering
+- `DialogueBox` - Text presentation
+- `ChoiceModal` - Player input
+- `AudioManager` - Sound playback
+
+### Environment Agnostic
+
+- ✅ No localStorage (host app handles saves)
+- ✅ No browser-specific APIs
+- ✅ Works in Electron, web, anywhere React runs
+
+---
+
+## 📊 Example Flow
+
+```
+Player starts → Prologue begins
+    ↓
+Choice 1: "Be brave"
+    → +2 courage
+    ↓
+Choice 2: "Help the stranger"
+    → +1 kindness, +1 leadership
+    ↓
+Prologue ends → Route selection
+    ↓
+"Alice's Route" (requires 2+ kindness) ✅ Unlocked
+    ↓
+Route progresses...
+    → Multiple choices build alice_bond
+    ↓
+Ending determined by total points
+    → "Best Friends Ending" (requires 5+ alice_bond) ✅
+    ↓
+Completion screen shows all earned points
+```
+
+---
+
+## 🚧 Future Enhancements
+
+Potential additions (not yet implemented):
+
+- **Gallery System** - CG/artwork collection
+- **Skip System** - Skip seen dialogue
+- **Auto-mode** - Automatic text advancement
+- **Text History** - Review past dialogue
+
+---
+
+## 🛠️ Dependencies
+
+**Runtime:**
+
+```json
+{
+  "react": "^18.0.0 || ^19.0.0",
+  "react-dom": "^18.0.0 || ^19.0.0",
+  "zustand": "^5.0.0",
+  "motion": "^12.0.0"
+}
+```
+
+**Dev (for TypeScript):**
+
+```json
+{
+  "@types/react": "^19.0.0",
+  "@types/react-dom": "^19.0.0",
+  "typescript": "^5.0.0",
+  "tailwindcss": "^3.4.0",
+  "autoprefixer": "^10.4.0",
+  "postcss": "^8.4.0"
+}
+```
+
+---
+
+## 📄 License
+
+MIT - Use freely in any project!
+
+Perfect for:
+
+- 🎮 Game jams
+- 💼 Portfolio projects
+- 🎓 Learning projects
+- 💰 Commercial visual novels
+- 🎨 Interactive stories
+
+---
+
+## 🙏 Credits
+
+Built with React, TypeScript, Zustand, and Motion (formerly Framer Motion).
+
+Designed for maximum portability and ease of use.
+
+---
+
+**Ready to create your visual novel?**
+
+Start by copying the engine files, creating your story content, and running your project. The example story provides a complete template to build from!
+
+🎮 Happy storytelling! ✨
