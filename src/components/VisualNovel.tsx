@@ -14,6 +14,7 @@ import { CompletionScreen } from './CompletionScreen';
 import { LoadingScreen } from './LoadingScreen';
 import { DebugPanel } from './DebugPanel';
 import { AudioManager, useAudio } from "./AudioManager";
+import { useAudioStore } from '../stores/audioStore';
 
 
 interface VisualNovelProps {
@@ -37,6 +38,8 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
 
     const [showChoiceModal, setShowChoiceModal] = useState(false);
     const [showDebug, setShowDebug] = useState(false);
+    const { isMuted, setMuted } = useAudioStore();
+
 
     // Load story on mount
     useEffect(() => {
@@ -161,6 +164,8 @@ export function VisualNovel({ story, className = '' }: VisualNovelProps) {
                 <UIElement zone="top-right" layer="navigation" className="p-4">
                     <NavigationControls
                         onToggleDebug={() => setShowDebug(!showDebug)}
+                        isMuted={isMuted}
+                        onToggleMute={() => setMuted(!isMuted)}
                     />
                 </UIElement>
 

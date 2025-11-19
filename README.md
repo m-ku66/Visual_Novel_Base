@@ -211,16 +211,14 @@ export const myStory: GameStory = {
 - **Enhanced Debug Tools**: Comprehensive progression tracking
 - **Point Visualization**: Color-coded point types in UI
 - **Requirement Filtering**: Automatic choice/scene filtering
-
-### 🚧 Future Enhancements (Easy to Add)
-
 - **Character Sprite Suite**: Visual character representations
 - **Background Image Suite**: Scene-specific backgrounds
 - **Sound Effect Suite**: Audio feedback for choices
-- **Save/Load System**: Player progress persistence
-- **Multiple Save Slots**: Different playthroughs
-- **Gallery Mode**: View unlocked scenes/endings
 - **Point History**: Track how points were earned
+
+### 🚧 Future Enhancements (For when life is easier lol)
+
+- **File Structure and Asset Polish**: Making this code presentable to laymen
 
 ## 📂 File Structure
 

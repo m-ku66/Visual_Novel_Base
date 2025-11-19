@@ -9,6 +9,7 @@ import type {
   PointCheck,
   Slide,
 } from "../types/vn";
+import { useAudioStore } from "./audioStore";
 
 interface VNStore extends GameState {
   // Story content
@@ -520,6 +521,9 @@ export const useVNStore = create<VNStore>((set, get) => ({
 
   // Reset to beginning
   reset: () => {
+    // ✅ Clean up audio before resetting game state
+    useAudioStore.getState().cleanup();
+
     set({
       currentPhase: "prologue",
       currentSceneIndex: 0,
@@ -533,6 +537,8 @@ export const useVNStore = create<VNStore>((set, get) => ({
       endingUnlocked: [],
       startTime: Date.now(),
     });
+
+    console.log("🎮 Game reset - audio cleaned up");
   },
 
   // Enhanced debug information
